@@ -7,9 +7,9 @@
 | Repository | `mind-temporal-eval-baselines` |
 | Dataset | MIND-small |
 | Scope | PHUC-01 đến PHUC-05 |
-| Project Stage | PHUC-01 Implemented; verification pending dependencies |
+| Project Stage | PHUC-01 Verified; PHUC-02 planning |
 | Last Updated | 2026-10-19 |
-| Current Focus | PHUC-01 đã có code và synthetic evidence; chờ dependencies để nghiệm thu đầy đủ |
+| Current Focus | PHUC-01 đã nghiệm thu; kế hoạch PHUC-02 đã trình, chờ duyệt cutoff và cách dùng History |
 
 Nguồn phạm vi: [Project Plan](project-plan.md). Ràng buộc nghiên cứu: [Proposal](SNA-Proposal-v2.md), mục 3.2, 4.2–4.3, 5 và Appendix A.2/E1. Quy trình làm việc: [AGENTS.md](../AGENTS.md).
 
@@ -19,7 +19,7 @@ Placeholder không phải bằng chứng triển khai. Acceptance criteria dư�
 
 | Ticket | Objective | Status | Last Updated |
 |---|---|---|---|
-| PHUC-01 | Evaluator & Metrics | Implemented | 2026-10-19 |
+| PHUC-01 | Evaluator & Metrics | Verified | 2026-10-19 |
 | PHUC-02 | Random & Popularity | Not Started | 2026-10-19 |
 | PHUC-03 | Category & Semantic PLM | Not Started | 2026-10-19 |
 | PHUC-04 | E1 Temporal Leakage | Not Started | 2026-10-19 |
@@ -50,7 +50,7 @@ Các mục dưới giữ nguyên vấn đề ban đầu; quyết định và b�
 | OD-05 | Chốt kết hợp category/subcategory, fallback thiếu dữ liệu; PLM revision, trường text, giới hạn history và mapping cache. | 03 |
 | OD-06 | Chốt biến thể B2 và nguồn click cho Random Split; tách split khỏi chính sách static popularity. Ghi hạn chế so sánh khi test set thay đổi và xử lý chênh lệch tương đối có mẫu số 0. | 04 |
 | OD-07 | Xác nhận deadline/ngân sách: Plan ghi 19/10, 6 giờ; Proposal có lịch Phúc đến 27/10. Chốt phạm vi nhiều seed; Plan đặt tổng hợp nhiều seed/kiểm định trong Future. | 05, toàn phạm vi |
-| OD-08 | Mở ngày 2026-10-19: pip bị chặn socket (WinError 10013), cache không có wheels. NumPy/scikit-learn/PyYAML/pytest chưa cài; cần môi trường mạng được phép hoặc nguồn wheel phù hợp để hoàn tất xác minh. | 01 |
+| OD-08 | **Resolved cho nghiệm thu PHUC-01, 2026-10-19.** Ban đầu pip trong phiên Codex bị chặn socket (WinError 10013), cache không có wheels. Người dùng đã cài requirements qua VS Code và cung cấp output pytest: 44 passed, 42 subtests passed, không Failed/Skipped. Không suy ra quyền mạng của sandbox Codex đã thay đổi. | 01 |
 
 Khi giải quyết: giữ ID, ghi ngày, quyết định, xác nhận của người dùng và ảnh hưởng; không xóa lịch sử quan trọng.
 
@@ -72,7 +72,7 @@ Xây evaluator độc lập mô hình, chấm điểm theo impression và phân 
 - [x] Hỗ trợ nhóm history length, cold/warm news và category.
 - [x] Viết test tie score, nhãn bất thường và dữ liệu thiếu.
 
-Checklist trên ghi nhận phần đã triển khai; không thay thế nghiệm thu. Còn phải chạy pytest và hai kiểm tra dependency đang skip trước khi Verified.
+Checklist trên ghi nhận phần đã triển khai; nghiệm thu dựa trên evidence ở mục D. Lượt pytest do người dùng chạy trong VS Code đã hoàn tất cả hai kiểm tra dependency trước đây bị skip.
 
 #### C. Acceptance Criteria
 
@@ -83,21 +83,23 @@ Checklist trên ghi nhận phần đã triển khai; không thay thế nghiệm 
 #### D. Implementation Evidence
 
 - Files: `src/data_loader/schema.py`; `src/evaluation/{metrics,evaluator,group_analyzer}.py`; `tests/test_metrics_edge_cases.py`; `configs/eval_config.yaml`; `requirements.txt`; hướng dẫn API trong `README.md`.
-- Tests: `.venv\Scripts\python.exe -m unittest discover -s tests -p test_metrics_edge_cases.py -v` — **42 Passed, 0 Failed, 2 Skipped**, tổng 44 test; hai test reference/YAML là **Not Run** vì thiếu dependencies. Pytest chưa khởi động được (`No module named pytest`).
-- Evidence: [validation log](../outputs/logs/phuc01_validation.md), [report JSON](../outputs/tables/phuc01_synthetic_2026-10-19/report.json), [overall](../outputs/tables/phuc01_synthetic_2026-10-19/overall.csv), [groups](../outputs/tables/phuc01_synthetic_2026-10-19/groups.csv), [per-impression](../outputs/tables/phuc01_synthetic_2026-10-19/per_impression.csv). Tất cả là **synthetic**, không phải kết quả MIND.
-- AC1: fixture tính tay, oracle AUC và aggregation Passed; còn đối chiếu NumPy/scikit-learn. AC2: edge-case checks Passed qua unittest; pytest Not Run. AC3: cohort, ngưỡng train và xuất artifact Passed; đọc YAML Not Run. Chưa đủ xác minh toàn bộ kế hoạch nghiệm thu.
+- Lịch sử kiểm tra của Codex: `.venv\Scripts\python.exe -m unittest discover -s tests -p test_metrics_edge_cases.py -v` — 42 Passed, 0 Failed, 2 Skipped; khi đó reference/YAML Not Run và pytest chưa khởi động được (`No module named pytest`).
+- **Evidence mới do người dùng cung cấp ngày 2026-10-19:** chạy `.\.venv\Scripts\python.exe -m pytest tests/test_metrics_edge_cases.py -v` trong terminal VS Code tại repository. Output nguyên văn kết luận: `44 passed, 42 subtests passed in 26.09s`; không Failed/Skipped. Môi trường hiển thị: Windows, Python 3.13.5, pytest 9.1.1, pluggy 1.7.0, interpreter `.venv\Scripts\python.exe`. Đây là output người dùng gửi trong hội thoại, không phải lượt Codex tự chạy lại; chưa có file transcript riêng. 42 subtests là các trường hợp con, không cộng thành 86 test độc lập.
+- `test_reference_numpy_and_sklearn` và `test_yaml_matches_approved_config`: **Passed** trong output mới, gỡ phần kiểm chứng còn thiếu. Phiên bản NumPy/scikit-learn/PyYAML không có trong output nên chưa ghi số phiên bản cụ thể.
+- Artifact sẵn có: [validation log lịch sử](../outputs/logs/phuc01_validation.md), [report JSON](../outputs/tables/phuc01_synthetic_2026-10-19/report.json), [overall](../outputs/tables/phuc01_synthetic_2026-10-19/overall.csv), [groups](../outputs/tables/phuc01_synthetic_2026-10-19/groups.csv), [per-impression](../outputs/tables/phuc01_synthetic_2026-10-19/per_impression.csv). Các file này giữ nguyên bằng chứng và môi trường của lượt chạy cũ; lượt pytest mới được ghi tại đây. Bảng metric vẫn là **synthetic**, không phải kết quả MIND.
+- **AC1 Passed:** fixture tính tay, oracle AUC, reference NumPy/scikit-learn và aggregation. **AC2 Passed:** schema/edge cases và toàn bộ suite pytest. **AC3 Passed:** cohort giữ nguyên candidate, ngưỡng train-only, bảng/per-impression artifact sẵn có và YAML config check. Đủ điều kiện Verified cho phạm vi evaluator được duyệt; không đồng nghĩa đã đánh giá trên MIND.
 
 #### E. Blockers & Open Decisions
 
-OD-02/OD-04 đã chốt theo phê duyệt ngày 2026-10-19 và cài trong code; OD-08 chặn nghiệm thu đầy đủ. OD-01 vẫn chặn đánh giá trên MIND, không ngăn kiểm chứng evaluator bằng fixture. Hợp đồng cutoff không chứng minh lịch sử click upstream hợp lệ; producer phải cung cấp nguồn đếm đáng tin cậy.
+OD-02/OD-04 đã chốt và triển khai; OD-08 đã gỡ cho nghiệm thu dựa trên output người dùng. Không còn blocker cho phạm vi PHUC-01 đã duyệt. OD-01 vẫn ảnh hưởng chạy trên MIND. Hợp đồng cutoff không chứng minh lịch sử click upstream hợp lệ; producer phải cung cấp nguồn đếm đáng tin cậy.
 
 #### F. Next Actions
 
-Hoàn tất cài dependencies trong môi trường có quyền mạng hoặc nguồn wheel hợp lệ (đã được phép cài), chạy pytest và hai kiểm tra đang skip, bổ sung evidence rồi xét Verified. Chờ người dùng review/xác nhận; không tự chuyển PHUC-02. EDA/dữ liệu thật để tích hợp về sau vẫn phụ thuộc loader và các ticket khác.
+Giữ evaluator làm giao diện tích hợp cho PHUC-02. Người dùng đã yêu cầu chuyển ticket; kế hoạch PHUC-02 đã trình nhưng chưa được duyệt các lựa chọn cutoff/History. Chờ xác nhận trước khi code. Dữ liệu thật và kiểm tra upstream nằm ở bước tích hợp sau.
 
 #### G. Last Updated
 
-2026-10-19 — PHUC-01 Implemented; bằng chứng kiểm tra một phần đã ghi, chưa Verified.
+2026-10-19 — PHUC-01 Verified, đối chiếu output pytest do người dùng cung cấp và artifact synthetic sẵn có.
 
 ### PHUC-02 — Random & Popularity
 
@@ -132,7 +134,7 @@ OD-01, OD-03; cần xác định cách dùng History cho đếm tích lũy và c
 
 #### F. Next Actions
 
-Phụ thuộc schema/evaluator PHUC-01 và loader/split. Trình kế hoạch `b1_random.py`, `b2_popularity.py` cùng fixture temporal trước khi code.
+Schema/evaluator PHUC-01 đã Verified. Kế hoạch `b1_random.py`, `b2_popularity.py`, loader/GTS và fixture temporal đã trình; chờ người dùng duyệt cutoff đầu ngày và loại History khỏi bộ đếm trước khi code. Các lựa chọn này chưa được coi là quyết định nghiên cứu đã chốt.
 
 #### G. Last Updated
 
@@ -202,7 +204,7 @@ Phụ thuộc PHUC-01, metadata/history chuẩn hóa và PLM/cache. Trình kế 
 #### D. Implementation Evidence
 
 - Files/modules đã triển khai: chưa có.
-- Tests/experiment runs: **Not Run** — chưa có B2/evaluator/pipeline.
+- Tests/experiment runs: **Not Run** — chưa có B2/pipeline E1; evaluator PHUC-01 đã Verified.
 - Outputs/logs: chưa có; chưa có bằng chứng đạt AC1–AC3.
 
 #### E. Blockers & Open Decisions
@@ -245,7 +247,7 @@ Kiểm chứng luồng chung, chuẩn hóa artifact và bàn giao evaluator có 
 
 #### E. Blockers & Open Decisions
 
-OD-01, OD-07; PHUC-01–04 chưa triển khai. Cần duyệt phạm vi tái chạy và tiêu chí so sánh phù hợp tài nguyên.
+OD-01, OD-07; PHUC-01 đã Verified, PHUC-02–04 chưa triển khai. Cần duyệt phạm vi tái chạy và tiêu chí so sánh phù hợp tài nguyên.
 
 #### F. Next Actions
 
@@ -276,3 +278,4 @@ Các đường dẫn bằng chứng chỉ được thêm khi artifact thực s�
 | 2026-10-19 | PHUC-01 approval | Người dùng trả lời "ok" cho kế hoạch schema/metrics/cohorts, tests và thêm/cài bốn dependencies. | Not Started → In Progress; OD-02/OD-04 chốt theo quyết định đã ghi; không mở rộng PHUC-02–05. |
 | 2026-10-19 | PHUC-01 environment | Tạo `.venv` thành công; pip install Failed do WinError 10013, cache 0 wheels/0 HTTP files. | OD-08 mở. Core dùng thư viện chuẩn; suite tương thích pytest/unittest, YAML và reference parity cần dependencies. |
 | 2026-10-19 | PHUC-01 verification | Lượt đầu 41 Passed/2 Skipped; sau chuẩn hóa scalar và test mới: 42 Passed/2 Skipped, 0 Failed. Synthetic CSV/JSON xuất thành công và khớp code hiện tại; chi tiết trong validation log. | In Progress → Implemented, chưa Verified: pytest, reference parity và YAML checks Not Run. PHUC-02–05 giữ Not Started; không commit/push. |
+| 2026-10-19 | PHUC-01 user verification | Người dùng báo đã cài requirements qua VS Code và gửi output `.\.venv\Scripts\python.exe -m pytest tests/test_metrics_edge_cases.py -v`: `44 passed, 42 subtests passed in 26.09s`; Python 3.13.5, pytest 9.1.1, pluggy 1.7.0. Reference NumPy/scikit-learn và YAML đều Passed. Không phải lượt Codex tự chạy lại. | Implemented → Verified; AC1–AC3 đạt với evidence mới và artifact synthetic sẵn có. OD-08 resolved cho nghiệm thu; giữ nguyên lịch sử lỗi. PHUC-02–05 vẫn Not Started; kế hoạch PHUC-02 chờ duyệt, chưa code. |
