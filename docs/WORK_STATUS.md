@@ -7,9 +7,9 @@
 | Repository | `mind-temporal-eval-baselines` |
 | Dataset | MIND-small |
 | Scope | PHUC-01 đến PHUC-05 |
-| Project Stage | PHUC-01 Verified; PHUC-02 planning |
+| Project Stage | PHUC-01–02 Verified |
 | Last Updated | 2026-10-19 |
-| Current Focus | PHUC-01 đã nghiệm thu; kế hoạch PHUC-02 đã trình, chờ duyệt cutoff và cách dùng History |
+| Current Focus | PHUC-02 đã nghiệm thu trên MIND-small; chờ người dùng review/xác nhận trước PHUC-03 |
 
 Nguồn phạm vi: [Project Plan](project-plan.md). Ràng buộc nghiên cứu: [Proposal](SNA-Proposal-v2.md), mục 3.2, 4.2–4.3, 5 và Appendix A.2/E1. Quy trình làm việc: [AGENTS.md](../AGENTS.md).
 
@@ -20,7 +20,7 @@ Placeholder không phải bằng chứng triển khai. Acceptance criteria dư�
 | Ticket | Objective | Status | Last Updated |
 |---|---|---|---|
 | PHUC-01 | Evaluator & Metrics | Verified | 2026-10-19 |
-| PHUC-02 | Random & Popularity | Not Started | 2026-10-19 |
+| PHUC-02 | Random & Popularity | Verified | 2026-10-19 |
 | PHUC-03 | Category & Semantic PLM | Not Started | 2026-10-19 |
 | PHUC-04 | E1 Temporal Leakage | Not Started | 2026-10-19 |
 | PHUC-05 | Testing & Reproducibility | Not Started | 2026-10-19 |
@@ -43,9 +43,9 @@ Các mục dưới giữ nguyên vấn đề ban đầu; quyết định và b�
 
 | ID | Vấn đề / quyết định cần xác nhận | Liên quan |
 |---|---|---|
-| OD-01 | `data/raw/` và `data/cache/` hiện chỉ có `.gitkeep`; cần nguồn dữ liệu/model hợp lệ trước chạy end-to-end. Fixture không thay thế kết quả MIND. | 01–05 |
+| OD-01 | Ban đầu raw/cache chỉ có `.gitkeep`. **Resolved cho dữ liệu PHUC-02, 2026-10-19:** người dùng cung cấp train/dev; đã đọc đủ TSV và chạy B1/B2 trên MIND-small. PLM/cache cần cho PHUC-03 vẫn chưa xác nhận. | 01–05 |
 | OD-02 | Chốt schema, định nghĩa metric theo scorer MIND, MRR nhiều positive, tie, nhãn suy biến và chính sách thiếu dữ liệu. | 01, 05 |
-| OD-03 | Chốt cutoff theo impression hay ngày; nguồn click, cách tránh đếm lặp History và biên cửa sổ 24 giờ. History không có timestamp từng click; không tự giả định toàn bộ đều trước 09/11. | 02–04 |
+| OD-03 | **Resolved cho PHUC-02, 2026-10-19:** cutoff đầu ngày; nguồn click impression train; không đếm History; cửa sổ `[d-24h,d)`. Kiểm thử biên, nguồn và audit thật Passed. Không suy rộng quyết định này thành protocol E1 hoặc Ghist; History vẫn không có timestamp từng click. | 02–04 |
 | OD-04 | Chốt ngưỡng history từ train và cách đánh giá cold/warm/category trong impression chứa nhiều nhóm; không đồng nhất cold news với thời gian xuất bản. | 01, 05 |
 | OD-05 | Chốt kết hợp category/subcategory, fallback thiếu dữ liệu; PLM revision, trường text, giới hạn history và mapping cache. | 03 |
 | OD-06 | Chốt biến thể B2 và nguồn click cho Random Split; tách split khỏi chính sách static popularity. Ghi hạn chế so sánh khi test set thay đổi và xử lý chênh lệch tương đối có mẫu số 0. | 04 |
@@ -53,6 +53,8 @@ Các mục dưới giữ nguyên vấn đề ban đầu; quyết định và b�
 | OD-08 | **Resolved cho nghiệm thu PHUC-01, 2026-10-19.** Ban đầu pip trong phiên Codex bị chặn socket (WinError 10013), cache không có wheels. Người dùng đã cài requirements qua VS Code và cung cấp output pytest: 44 passed, 42 subtests passed, không Failed/Skipped. Không suy ra quyền mạng của sandbox Codex đã thay đổi. | 01 |
 
 Khi giải quyết: giữ ID, ghi ngày, quyết định, xác nhận của người dùng và ảnh hưởng; không xóa lịch sử quan trọng.
+
+**2026-10-19 — phê duyệt PHUC-02:** người dùng đã cung cấp `data/raw/train/` và `data/raw/dev/`, đồng ý kế hoạch và yêu cầu thực hiện. OD-01 được gỡ cho dữ liệu B1/B2 (PLM/cache cho PHUC-03 chưa được xác nhận). OD-03 chốt cho PHUC-02: cutoff đầu ngày; B2 tích lũy dùng click impression trước cutoff, B2-24h dùng `[cutoff - 24h, cutoff)`, không đếm History. Validation 14/11 dùng click 09–13/11; test/dev 15/11 dùng click 09–14/11. Cold/warm lấy count tích lũy của cùng nguồn quan sát, không phải toàn bộ Ghist. Giữ seed mặc định 0; chưa triển khai E1 hoặc tổng hợp nhiều seed.
 
 **2026-10-19 — kế hoạch PHUC-01 được người dùng phê duyệt ("ok"):** OD-02/OD-04 chốt MRR nhiều positive theo MIND, stable tie theo thứ tự candidate, metric không xác định trả null và đếm riêng; schema strict. History rỗng tách riêng; Q25/Q75 học từ history dương của train. Cold/warm là cohort impression cold_only/warm_only/mixed/unknown; category là cohort có chứa category, cho phép chồng lấp, luôn giữ đầy đủ candidate. Metadata có cutoff không muộn hơn impression, chỉ chứa click trước cutoff. Cho phép thêm/cài NumPy, scikit-learn, PyYAML, pytest trong `.venv`. OD-03 về nguồn History và cách dựng B2 vẫn mở; không được suy ra từ hợp đồng metadata của evaluator.
 
@@ -91,11 +93,11 @@ Checklist trên ghi nhận phần đã triển khai; nghiệm thu dựa trên ev
 
 #### E. Blockers & Open Decisions
 
-OD-02/OD-04 đã chốt và triển khai; OD-08 đã gỡ cho nghiệm thu dựa trên output người dùng. Không còn blocker cho phạm vi PHUC-01 đã duyệt. OD-01 vẫn ảnh hưởng chạy trên MIND. Hợp đồng cutoff không chứng minh lịch sử click upstream hợp lệ; producer phải cung cấp nguồn đếm đáng tin cậy.
+OD-02/OD-04 đã chốt và triển khai; OD-08 đã gỡ cho nghiệm thu dựa trên output người dùng. Không còn blocker cho phạm vi PHUC-01 đã duyệt. PHUC-02 đã cung cấp dữ liệu MIND và kiểm chứng nguồn click upstream cho B1/B2; evaluator vẫn yêu cầu producer khác tự bảo đảm hợp đồng cutoff.
 
 #### F. Next Actions
 
-Giữ evaluator làm giao diện tích hợp cho PHUC-02. Người dùng đã yêu cầu chuyển ticket; kế hoạch PHUC-02 đã trình nhưng chưa được duyệt các lựa chọn cutoff/History. Chờ xác nhận trước khi code. Dữ liệu thật và kiểm tra upstream nằm ở bước tích hợp sau.
+Evaluator đã được PHUC-02 dùng nguyên trạng trên validation/test MIND-small; 44 regression tests và 42 subtests Passed trong lượt kiểm tra tích hợp. Tiếp tục dùng giao diện này cho các ticket sau; không thay protocol nếu chưa được duyệt.
 
 #### G. Last Updated
 
@@ -109,12 +111,12 @@ Cung cấp B1 và hai biến thể B2 với dữ liệu quá khứ hợp lệ.
 
 #### B. Task Checklist
 
-- [ ] Cài B1 Random với seed cố định.
-- [ ] Cài B2 tổng click trước cutoff đã duyệt.
-- [ ] Cài B2 số click trong cửa sổ 24 giờ trước cutoff.
-- [ ] Xử lý tin chưa có click và tie score theo chính sách đã chốt.
-- [ ] Kiểm thử không dùng click tại/sau cutoff và các biên cửa sổ.
-- [ ] Chạy B1 và cả hai B2 qua evaluator.
+- [x] Cài B1 Random với seed cố định.
+- [x] Cài B2 tổng click trước cutoff đã duyệt.
+- [x] Cài B2 số click trong cửa sổ 24 giờ trước cutoff.
+- [x] Xử lý tin chưa có click và tie score theo chính sách đã chốt.
+- [x] Kiểm thử không dùng click tại/sau cutoff và các biên cửa sổ.
+- [x] Chạy B1 và cả hai B2 qua evaluator.
 
 #### C. Acceptance Criteria
 
@@ -124,21 +126,23 @@ Cung cấp B1 và hai biến thể B2 với dữ liệu quá khứ hợp lệ.
 
 #### D. Implementation Evidence
 
-- Files/modules đã triển khai: chưa có.
-- Tests: **Not Run** — chưa có implementation/test logic.
-- Outputs/logs: chưa có; chưa có bằng chứng đạt AC1–AC3.
+- Files: `src/baselines/{base,b1_random,b2_popularity}.py`, `src/data_loader/{mind_reader,temporal_split}.py`, `scripts/run_baselines.py`, `configs/baselines_config.yaml`, `tests/test_temporal_leakage.py`, hướng dẫn trong `README.md`. Không sửa logic evaluator PHUC-01.
+- Tests: `.venv\Scripts\python.exe -m pytest tests/test_temporal_leakage.py tests/test_metrics_edge_cases.py -q` — **82 Passed, 42 subtests Passed, 0 Failed/Skipped** (38 PHUC-02 + 44 PHUC-01). Một cảnh báo quyền ghi pytest cache, không ảnh hưởng kết quả.
+- Run thật seed 0 hoàn tất cả 3 baseline × 2 split: train 126.695, validation 30.270, train cuối 156.965, test/dev 73.152 impression. Không loại impression do metric không xác định; metadata category đủ cho mọi candidate.
+- Evidence: [validation log](../outputs/logs/phuc02_validation.md), [bảng metrics](../outputs/tables/phuc02_mindsmall_seed0_2026-10-19/metrics.csv), [manifest](../outputs/tables/phuc02_mindsmall_seed0_2026-10-19/manifest.json). Bảng group theo split/model ở cùng thư mục run; prediction/metadata đầy đủ nằm trong `outputs/predictions/phuc02_mindsmall_seed0_2026-10-19/` (Git-ignored).
+- AC1/AC2 **Passed**: fixtures + audit Counter độc lập trên 80 impression/3.446 candidate thực khớp score, count tích lũy và cutoff. AC3 **Passed**: đủ metric và provenance của sáu lượt chạy; 11 code hashes khớp manifest. **Verified** cho protocol đã duyệt, không phải popularity có toàn bộ Ghist hay kết quả E1.
 
 #### E. Blockers & Open Decisions
 
-OD-01, OD-03; cần xác định cách dùng History cho đếm tích lũy và cửa sổ 24 giờ.
+Không còn blocker nghiệm thu PHUC-02. OD-01 đã gỡ cho dữ liệu train/dev; OD-03 đã chốt và kiểm chứng. Giới hạn nghiên cứu: loại History khỏi popularity, snapshot ngày, seed 0; chưa có tổng hợp nhiều seed hoặc kiểm định ý nghĩa thống kê. Cảnh báo pytest cache là không chặn; có thể dùng `-p no:cacheprovider` khi chạy lại test.
 
 #### F. Next Actions
 
-Schema/evaluator PHUC-01 đã Verified. Kế hoạch `b1_random.py`, `b2_popularity.py`, loader/GTS và fixture temporal đã trình; chờ người dùng duyệt cutoff đầu ngày và loại History khỏi bộ đếm trước khi code. Các lựa chọn này chưa được coi là quyết định nghiên cứu đã chốt.
+Chờ người dùng review/xác nhận trước PHUC-03. B2/GTS sẵn sàng cho E1 sau khi duyệt protocol của PHUC-04; không tự chạy thêm test-set configurations hoặc commit/push.
 
 #### G. Last Updated
 
-2026-10-19 — khởi tạo tracker, chưa triển khai.
+2026-10-19 — PHUC-02 Verified sau kiểm thử, chạy thật train/dev và audit artifact.
 
 ### PHUC-03 — Category & Semantic PLM
 
@@ -170,7 +174,7 @@ Cung cấp B3 dựa trên hồ sơ chủ đề và B4 semantic matching bằng P
 
 #### E. Blockers & Open Decisions
 
-OD-01, OD-03, OD-05; chưa xác nhận dữ liệu/model sẵn sàng hoặc chính sách fallback.
+Dữ liệu train/dev đã sẵn sàng qua PHUC-02. OD-01 còn phần PLM/cache; OD-05 về công thức/fallback và cấu hình embedding vẫn mở. Reader PHUC-02 chỉ giữ history length; PHUC-03 cần kế hoạch xử lý history IDs phù hợp, không suy diễn timestamp.
 
 #### F. Next Actions
 
@@ -204,12 +208,12 @@ Phụ thuộc PHUC-01, metadata/history chuẩn hóa và PLM/cache. Trình kế 
 #### D. Implementation Evidence
 
 - Files/modules đã triển khai: chưa có.
-- Tests/experiment runs: **Not Run** — chưa có B2/pipeline E1; evaluator PHUC-01 đã Verified.
+- Tests/experiment runs: **Not Run** — pipeline E1 chưa triển khai; evaluator PHUC-01 và B2 PHUC-02 đã Verified.
 - Outputs/logs: chưa có; chưa có bằng chứng đạt AC1–AC3.
 
 #### E. Blockers & Open Decisions
 
-OD-01, OD-03, OD-06; không mặc định nguồn click hoặc biến thể B2 của thí nghiệm.
+Dữ liệu và B2 đã có từ PHUC-02. OD-03/OD-06 cho E1 vẫn cần xác nhận nguồn click từng protocol và biến thể B2; không tự coi protocol PHUC-02 là quyết định cho các nhánh leaky.
 
 #### F. Next Actions
 
@@ -247,7 +251,7 @@ Kiểm chứng luồng chung, chuẩn hóa artifact và bàn giao evaluator có 
 
 #### E. Blockers & Open Decisions
 
-OD-01, OD-07; PHUC-01 đã Verified, PHUC-02–04 chưa triển khai. Cần duyệt phạm vi tái chạy và tiêu chí so sánh phù hợp tài nguyên.
+OD-01 (PLM/cache), OD-07; PHUC-01–02 đã Verified, PHUC-03–04 chưa triển khai. Cần duyệt phạm vi tái chạy và tiêu chí so sánh phù hợp tài nguyên.
 
 #### F. Next Actions
 
@@ -279,3 +283,5 @@ Các đường dẫn bằng chứng chỉ được thêm khi artifact thực s�
 | 2026-10-19 | PHUC-01 environment | Tạo `.venv` thành công; pip install Failed do WinError 10013, cache 0 wheels/0 HTTP files. | OD-08 mở. Core dùng thư viện chuẩn; suite tương thích pytest/unittest, YAML và reference parity cần dependencies. |
 | 2026-10-19 | PHUC-01 verification | Lượt đầu 41 Passed/2 Skipped; sau chuẩn hóa scalar và test mới: 42 Passed/2 Skipped, 0 Failed. Synthetic CSV/JSON xuất thành công và khớp code hiện tại; chi tiết trong validation log. | In Progress → Implemented, chưa Verified: pytest, reference parity và YAML checks Not Run. PHUC-02–05 giữ Not Started; không commit/push. |
 | 2026-10-19 | PHUC-01 user verification | Người dùng báo đã cài requirements qua VS Code và gửi output `.\.venv\Scripts\python.exe -m pytest tests/test_metrics_edge_cases.py -v`: `44 passed, 42 subtests passed in 26.09s`; Python 3.13.5, pytest 9.1.1, pluggy 1.7.0. Reference NumPy/scikit-learn và YAML đều Passed. Không phải lượt Codex tự chạy lại. | Implemented → Verified; AC1–AC3 đạt với evidence mới và artifact synthetic sẵn có. OD-08 resolved cho nghiệm thu; giữ nguyên lịch sử lỗi. PHUC-02–05 vẫn Not Started; kế hoạch PHUC-02 chờ duyệt, chưa code. |
+| 2026-10-19 | PHUC-02 approval/data | Người dùng cung cấp train/dev và đồng ý kế hoạch. GTS đối chiếu đúng Proposal; duyệt cutoff đầu ngày và chỉ đếm click có timestamp, loại History. | Not Started → In Progress; OD-01 gỡ cho dữ liệu B1/B2, OD-03 chốt riêng PHUC-02. |
+| 2026-10-19 | PHUC-02 implementation/verification | 82 tests + 42 subtests Passed; runner thật exit 0, 6 model/split runs completed, seed 0. Audit độc lập 80 impression/3.446 candidate khớp; code hashes và n_valid khớp manifest. | In Progress → Verified, AC1–AC3 đạt. Lưu metrics/manifest/group/prediction và validation log; warning pytest cache không chặn. Không triển khai PHUC-03–05, không commit/push. |

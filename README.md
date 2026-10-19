@@ -15,8 +15,8 @@ Repository này cung cấp **Bộ khung Đánh giá Chuẩn hóa theo Thời gia
 
 ## PHUC-01: sử dụng evaluator
 
-Đã triển khai API schema, metric, evaluator và phân nhóm. Baseline, loader TSV,
-temporal split, CLI scripts và statistical tests vẫn là placeholder. Các kết quả
+Đã triển khai API schema, metric, evaluator và phân nhóm; B1/B2 và runner GTS được
+mô tả ở mục PHUC-02 bên dưới. B3/B4, E1 và statistical tests vẫn là placeholder. Các kết quả
 trong `outputs/tables/phuc01_synthetic_2026-10-19/` chỉ là **synthetic fixtures**,
 không phải kết quả thực nghiệm MIND-small.
 
@@ -114,6 +114,78 @@ Khi PyYAML sẵn sàng, dùng `load_eval_config("configs/eval_config.yaml")` r�
 Config thiếu/thừa key hoặc thay chính sách đã duyệt sẽ bị từ chối; thay protocol cần
 phê duyệt và cập nhật implementation/tests. Ghi dataset/split identity, seed và code
 version trong `run_metadata` khi tích hợp mô hình; evaluator không tự tạo thông tin này.
+
+## PHUC-02: Random và Temporal Popularity
+
+### Protocol đã duyệt
+
+| Phần | Impression đánh giá | Nguồn click cho B2 |
+|---|---|---|
+| Train | Không báo metric train | 09–13/11/2019; dùng để fit ngưỡng history |
+| Validation | 14/11 trong train chính thức | Click impression 09–13/11 |
+| Test | 15/11 từ dev chính thức | Click impression 09–14/11 (train cuối) |
+
+Cutoff `d` là 00:00 đầu ngày của impression. **B2 tích lũy** đếm click quan sát được
+trước `d`; **B2-24h** đếm trong `[d - 24 giờ, d)`, không phải 24 giờ trượt đến timestamp
+của impression. Cả hai không dùng click cùng ngày, click test hoặc nhãn của impression
+đang chấm điểm. History chỉ cung cấp độ dài, **không tham gia bộ đếm** vì thiếu timestamp.
+Đây là lựa chọn đã được duyệt cho PHUC-02, khác popularity đầy đủ trên `Ghist + clicks`.
+
+Ví dụ: impression lúc 15/11 10:00 dùng cutoff 15/11 00:00. B2-24h chỉ đếm click ngày
+14/11. Tin có click ngày 13/11 nhưng không có click ngày 14/11 có điểm B2-24h bằng 0,
+nhưng vẫn được gắn warm theo count tích lũy của nguồn quan sát đã khai báo.
+
+**B1** tạo điểm pseudorandom từ SHA-256 của `[seed, source, impression_id, news_id]`,
+lấy 53 bit cao chia cho `2**53`. Điểm không phụ thuộc thứ tự xử lý batch hoặc label;
+cùng seed/ID tái lập giữa các process. Seed mặc định là 0. **B2** trả count dưới dạng
+score, tin chưa có click nhận 0. Tie giữ thứ tự candidate gốc theo evaluator PHUC-01.
+
+### Chạy từ thư mục gốc
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.run_baselines --help
+.\.venv\Scripts\python.exe -m scripts.run_baselines --output-dir outputs/tables/my_phuc02_run --predictions-dir outputs/predictions/my_phuc02_run
+.\.venv\Scripts\python.exe -m pytest tests/test_temporal_leakage.py tests/test_metrics_edge_cases.py -v -p no:cacheprovider
+```
+
+Đường dẫn mặc định: `data/raw/train/behaviors.tsv`, `data/raw/dev/behaviors.tsv` và
+`news.tsv` ở cả hai thư mục. Có thể chỉ định `--train-behaviors`, `--dev-behaviors`,
+`--news PATH [PATH ...]`, `--config`, `--eval-config`, `--seed`. Dữ liệu fixture phải
+gắn `--data-kind synthetic`; mặc định là `MIND-small`. Không dùng embedding files.
+
+Runner yêu cầu **hai thư mục run mới, riêng biệt**; từ chối ghi đè evidence. Chạy
+validation rồi test với cùng cấu hình; không tự tune theo test, không tự chạy E1.
+Kiểm thử dùng fixture TSV tổng hợp; lệnh chạy thật mới sinh metric trên MIND.
+Nếu có lỗi giữa chừng, manifest ghi `failed`, giữ artifact đã sinh để kiểm tra.
+
+### Luồng xử lý và artifact
+
+`mind_reader` → GTS → index click từ training partitions → label-free scoring →
+ghép label vào prediction schema → evaluator PHUC-01 → CSV/provenance.
+
+- `src/data_loader/mind_reader.py`: parse TSV strict, giữ thứ tự candidate, đếm history
+  length; lỗi cột/nhãn/ID trùng kèm tên file và số dòng. Không sửa dữ liệu gốc.
+- `temporal_split.py`: kiểm tra đúng khoảng ngày và nguồn train/dev; tạo train cuối
+  bằng train + validation, không thay đổi các partition ban đầu.
+- `ClickIndex`: mỗi positive candidate trong một impression là một sự kiện; không
+  đếm lặp impression nạp trùng. Click của cùng user-news ở impression khác vẫn tính.
+  Timestamp được sắp theo news; binary search thực hiện biên `< d` và `[d-24h,d)`.
+- `BaseRecommender.score` chỉ nhận ID và thời gian, không nhận label. Metadata
+  cold/warm luôn dùng count tích lũy, kể cả prediction của B1/B2-24h.
+- Ngưỡng history lấy từ 09–13/11, giữ nguyên khi đánh giá validation/test. Train rows
+  đưa vào evaluator để fit nhóm có score trung tính 0, **không được chấm hoặc báo
+  thành kết quả baseline train**. Candidate objects bất biến được chia sẻ để giảm RAM.
+- `outputs/tables/<run>/metrics.csv`: bảng bốn metric cho ba model × hai split;
+  `<split>/<model>/{overall,groups}.csv`: bảng chi tiết tổng hợp.
+- `outputs/predictions/<run>/<split>/<model>/`: `per_impression.csv` và `metadata.json`
+  chứa prediction đầy đủ/provenance. Đây là artifact lớn, đã được Git bỏ qua.
+- `outputs/tables/<run>/manifest.json`: trạng thái, cấu hình resolved, seed, source
+  cutoff, kích thước split, hash SHA-256 input/code, Git base revision và phiên bản
+  runtime. Hash code nhận diện cả thay đổi chưa commit; metadata dùng để truy lại run.
+
+Kết quả PHUC-02 seed 0 chỉ là baseline ở cấu hình đã duyệt; chưa phải kết quả nhiều
+seed hoặc kết luận về leakage E1. Cold/warm ở đây là chưa/đã có click trong nguồn
+impression quan sát, không phải chưa/đã có click trong toàn bộ lịch sử của MIND.
 
 ## 📂 Cấu trúc thư mục
 
