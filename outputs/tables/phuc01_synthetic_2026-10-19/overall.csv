@@ -1,0 +1,5 @@
+metric,mean,n_impressions,n_valid,n_undefined
+auc,0.5,4,2,2
+mrr,0.648148148148148,4,3,1
+ndcg@5,0.9464805260987917,4,3,1
+ndcg@10,0.9464805260987917,4,3,1

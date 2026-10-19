@@ -7,9 +7,9 @@
 | Repository | `mind-temporal-eval-baselines` |
 | Dataset | MIND-small |
 | Scope | PHUC-01 đến PHUC-05 |
-| Project Stage | Initial Scaffolding |
+| Project Stage | PHUC-01 Implemented; verification pending dependencies |
 | Last Updated | 2026-10-19 |
-| Current Focus | Chưa bắt đầu implementation |
+| Current Focus | PHUC-01 đã có code và synthetic evidence; chờ dependencies để nghiệm thu đầy đủ |
 
 Nguồn phạm vi: [Project Plan](project-plan.md). Ràng buộc nghiên cứu: [Proposal](SNA-Proposal-v2.md), mục 3.2, 4.2–4.3, 5 và Appendix A.2/E1. Quy trình làm việc: [AGENTS.md](../AGENTS.md).
 
@@ -19,7 +19,7 @@ Placeholder không phải bằng chứng triển khai. Acceptance criteria dư�
 
 | Ticket | Objective | Status | Last Updated |
 |---|---|---|---|
-| PHUC-01 | Evaluator & Metrics | Not Started | 2026-10-19 |
+| PHUC-01 | Evaluator & Metrics | Implemented | 2026-10-19 |
 | PHUC-02 | Random & Popularity | Not Started | 2026-10-19 |
 | PHUC-03 | Category & Semantic PLM | Not Started | 2026-10-19 |
 | PHUC-04 | E1 Temporal Leakage | Not Started | 2026-10-19 |
@@ -39,7 +39,7 @@ Có open decision khi chưa bắt đầu không tự động chuyển ticket san
 
 ## Shared Blockers & Open Decisions
 
-Các mục sau đều đang mở; chưa có quyết định triển khai được phê duyệt trong tracker này.
+Các mục dưới giữ nguyên vấn đề ban đầu; quyết định và bằng chứng xử lý được ghi tiếp bên dưới và trong Evidence & Decision Log.
 
 | ID | Vấn đề / quyết định cần xác nhận | Liên quan |
 |---|---|---|
@@ -50,8 +50,11 @@ Các mục sau đều đang mở; chưa có quyết định triển khai đượ
 | OD-05 | Chốt kết hợp category/subcategory, fallback thiếu dữ liệu; PLM revision, trường text, giới hạn history và mapping cache. | 03 |
 | OD-06 | Chốt biến thể B2 và nguồn click cho Random Split; tách split khỏi chính sách static popularity. Ghi hạn chế so sánh khi test set thay đổi và xử lý chênh lệch tương đối có mẫu số 0. | 04 |
 | OD-07 | Xác nhận deadline/ngân sách: Plan ghi 19/10, 6 giờ; Proposal có lịch Phúc đến 27/10. Chốt phạm vi nhiều seed; Plan đặt tổng hợp nhiều seed/kiểm định trong Future. | 05, toàn phạm vi |
+| OD-08 | Mở ngày 2026-10-19: pip bị chặn socket (WinError 10013), cache không có wheels. NumPy/scikit-learn/PyYAML/pytest chưa cài; cần môi trường mạng được phép hoặc nguồn wheel phù hợp để hoàn tất xác minh. | 01 |
 
 Khi giải quyết: giữ ID, ghi ngày, quyết định, xác nhận của người dùng và ảnh hưởng; không xóa lịch sử quan trọng.
+
+**2026-10-19 — kế hoạch PHUC-01 được người dùng phê duyệt ("ok"):** OD-02/OD-04 chốt MRR nhiều positive theo MIND, stable tie theo thứ tự candidate, metric không xác định trả null và đếm riêng; schema strict. History rỗng tách riêng; Q25/Q75 học từ history dương của train. Cold/warm là cohort impression cold_only/warm_only/mixed/unknown; category là cohort có chứa category, cho phép chồng lấp, luôn giữ đầy đủ candidate. Metadata có cutoff không muộn hơn impression, chỉ chứa click trước cutoff. Cho phép thêm/cài NumPy, scikit-learn, PyYAML, pytest trong `.venv`. OD-03 về nguồn History và cách dựng B2 vẫn mở; không được suy ra từ hợp đồng metadata của evaluator.
 
 ## Ticket Details
 
@@ -63,11 +66,13 @@ Xây evaluator độc lập mô hình, chấm điểm theo impression và phân 
 
 #### B. Task Checklist
 
-- [ ] Chuẩn hóa schema input/output, định danh impression và ánh xạ candidate–label–score.
-- [ ] Cài AUC, MRR, nDCG@5 và nDCG@10 theo định nghĩa đã chốt.
-- [ ] Tính metric từng impression rồi lấy trung bình.
-- [ ] Hỗ trợ nhóm history length, cold/warm news và category.
-- [ ] Viết test tie score, nhãn bất thường và dữ liệu thiếu.
+- [x] Chuẩn hóa schema input/output, định danh impression và ánh xạ candidate–label–score.
+- [x] Cài AUC, MRR, nDCG@5 và nDCG@10 theo định nghĩa đã chốt.
+- [x] Tính metric từng impression rồi lấy trung bình.
+- [x] Hỗ trợ nhóm history length, cold/warm news và category.
+- [x] Viết test tie score, nhãn bất thường và dữ liệu thiếu.
+
+Checklist trên ghi nhận phần đã triển khai; không thay thế nghiệm thu. Còn phải chạy pytest và hai kiểm tra dependency đang skip trước khi Verified.
 
 #### C. Acceptance Criteria
 
@@ -77,21 +82,22 @@ Xây evaluator độc lập mô hình, chấm điểm theo impression và phân 
 
 #### D. Implementation Evidence
 
-- Files/modules đã triển khai: chưa có.
-- Tests: **Not Run** — chưa có implementation/test logic.
-- Outputs/logs: chưa có; chưa có bằng chứng đạt AC1–AC3.
+- Files: `src/data_loader/schema.py`; `src/evaluation/{metrics,evaluator,group_analyzer}.py`; `tests/test_metrics_edge_cases.py`; `configs/eval_config.yaml`; `requirements.txt`; hướng dẫn API trong `README.md`.
+- Tests: `.venv\Scripts\python.exe -m unittest discover -s tests -p test_metrics_edge_cases.py -v` — **42 Passed, 0 Failed, 2 Skipped**, tổng 44 test; hai test reference/YAML là **Not Run** vì thiếu dependencies. Pytest chưa khởi động được (`No module named pytest`).
+- Evidence: [validation log](../outputs/logs/phuc01_validation.md), [report JSON](../outputs/tables/phuc01_synthetic_2026-10-19/report.json), [overall](../outputs/tables/phuc01_synthetic_2026-10-19/overall.csv), [groups](../outputs/tables/phuc01_synthetic_2026-10-19/groups.csv), [per-impression](../outputs/tables/phuc01_synthetic_2026-10-19/per_impression.csv). Tất cả là **synthetic**, không phải kết quả MIND.
+- AC1: fixture tính tay, oracle AUC và aggregation Passed; còn đối chiếu NumPy/scikit-learn. AC2: edge-case checks Passed qua unittest; pytest Not Run. AC3: cohort, ngưỡng train và xuất artifact Passed; đọc YAML Not Run. Chưa đủ xác minh toàn bộ kế hoạch nghiệm thu.
 
 #### E. Blockers & Open Decisions
 
-OD-02, OD-04 cần chốt trước phần triển khai liên quan; OD-01 ảnh hưởng đánh giá trên MIND. Chưa đánh dấu Blocked vì chưa bắt đầu.
+OD-02/OD-04 đã chốt theo phê duyệt ngày 2026-10-19 và cài trong code; OD-08 chặn nghiệm thu đầy đủ. OD-01 vẫn chặn đánh giá trên MIND, không ngăn kiểm chứng evaluator bằng fixture. Hợp đồng cutoff không chứng minh lịch sử click upstream hợp lệ; producer phải cung cấp nguồn đếm đáng tin cậy.
 
 #### F. Next Actions
 
-Trình kế hoạch schema/metric/group và fixture để duyệt. Module dự kiến: `src/data_loader/schema.py`, `src/evaluation/`, `tests/test_metrics_edge_cases.py`; cần giao diện loader nhưng không phụ thuộc baseline.
+Hoàn tất cài dependencies trong môi trường có quyền mạng hoặc nguồn wheel hợp lệ (đã được phép cài), chạy pytest và hai kiểm tra đang skip, bổ sung evidence rồi xét Verified. Chờ người dùng review/xác nhận; không tự chuyển PHUC-02. EDA/dữ liệu thật để tích hợp về sau vẫn phụ thuộc loader và các ticket khác.
 
 #### G. Last Updated
 
-2026-10-19 — khởi tạo tracker, chưa triển khai.
+2026-10-19 — PHUC-01 Implemented; bằng chứng kiểm tra một phần đã ghi, chưa Verified.
 
 ### PHUC-02 — Random & Popularity
 
@@ -267,3 +273,6 @@ Các đường dẫn bằng chứng chỉ được thêm khi artifact thực s�
 |---|---|---|---|
 | 2026-10-19 | Khởi tạo tracker | Đối chiếu Project Plan và kiểm tra scaffolding: file Python/YAML rỗng; thư mục raw/cache và output chỉ có `.gitkeep`. | PHUC-01–05: Not Started; mọi checklist chưa tick; kiểm thử ticket Not Run. OD-01–07 còn mở. |
 | 2026-10-19 | Kiểm tra tài liệu | Kiểm tra cấu trúc: checklist 5/6/7/6/5 khớp 29 task của Plan; mỗi ticket đủ A–G, 5 trạng thái Not Started, 0 mục đã tick. Đối chiếu quy tắc nghiệm thu, evidence và xác nhận chuyển task với AGENTS.md. | Passed cho kiểm tra tài liệu; không phải bằng chứng implementation. `git diff --check`: exit 0; kiểm tra thêm `git diff --no-index --check` với `/dev/null` cho hai file untracked không báo lỗi whitespace (exit 1 do có khác biệt; có cảnh báo LF/CRLF). Tests/ML experiments: Not Run, ngoài phạm vi. |
+| 2026-10-19 | PHUC-01 approval | Người dùng trả lời "ok" cho kế hoạch schema/metrics/cohorts, tests và thêm/cài bốn dependencies. | Not Started → In Progress; OD-02/OD-04 chốt theo quyết định đã ghi; không mở rộng PHUC-02–05. |
+| 2026-10-19 | PHUC-01 environment | Tạo `.venv` thành công; pip install Failed do WinError 10013, cache 0 wheels/0 HTTP files. | OD-08 mở. Core dùng thư viện chuẩn; suite tương thích pytest/unittest, YAML và reference parity cần dependencies. |
+| 2026-10-19 | PHUC-01 verification | Lượt đầu 41 Passed/2 Skipped; sau chuẩn hóa scalar và test mới: 42 Passed/2 Skipped, 0 Failed. Synthetic CSV/JSON xuất thành công và khớp code hiện tại; chi tiết trong validation log. | In Progress → Implemented, chưa Verified: pytest, reference parity và YAML checks Not Run. PHUC-02–05 giữ Not Started; không commit/push. |

@@ -1,0 +1,5 @@
+# PHUC-01: direct dependencies; exact installed versions are logged per run.
+numpy>=2.1,<3
+scikit-learn>=1.6,<2
+PyYAML>=6.0.2,<7
+pytest>=8.3,<10

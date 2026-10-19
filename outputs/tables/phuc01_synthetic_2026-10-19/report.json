@@ -1,0 +1,726 @@
+{
+  "per_impression": [
+    {
+      "source": "synthetic",
+      "impression_id": "mixed",
+      "user_id": "U1",
+      "split": "test",
+      "timestamp": "2019-11-15T12:00:00",
+      "history_length": 4,
+      "n_candidates": 3,
+      "n_positive": 2,
+      "metadata_cutoff": "2019-11-15T00:00:00",
+      "metadata_source": "synthetic_counts",
+      "candidate_ids": [
+        "N0",
+        "N1",
+        "N2"
+      ],
+      "labels": [
+        1,
+        0,
+        1
+      ],
+      "scores": [
+        0.9,
+        0.5,
+        0.1
+      ],
+      "categories": [
+        "sports",
+        "finance",
+        "sports"
+      ],
+      "prior_click_counts": [
+        0,
+        2,
+        0
+      ],
+      "groups": {
+        "history_length": [
+          "medium"
+        ],
+        "cold_warm": [
+          "mixed"
+        ],
+        "category_presence": [
+          "category:finance",
+          "category:sports"
+        ]
+      },
+      "auc": 0.5,
+      "mrr": 0.6666666666666666,
+      "ndcg@5": 0.9197207891481876,
+      "ndcg@10": 0.9197207891481876
+    },
+    {
+      "source": "synthetic",
+      "impression_id": "cold",
+      "user_id": "U1",
+      "split": "test",
+      "timestamp": "2019-11-15T12:00:00",
+      "history_length": 0,
+      "n_candidates": 3,
+      "n_positive": 0,
+      "metadata_cutoff": "2019-11-15T00:00:00",
+      "metadata_source": "synthetic_counts",
+      "candidate_ids": [
+        "N0",
+        "N1",
+        "N2"
+      ],
+      "labels": [
+        0,
+        0,
+        0
+      ],
+      "scores": [
+        0.9,
+        0.5,
+        0.1
+      ],
+      "categories": [
+        "sports",
+        "finance",
+        "sports"
+      ],
+      "prior_click_counts": [
+        0,
+        0,
+        0
+      ],
+      "groups": {
+        "history_length": [
+          "empty"
+        ],
+        "cold_warm": [
+          "cold_only"
+        ],
+        "category_presence": [
+          "category:finance",
+          "category:sports"
+        ]
+      },
+      "auc": null,
+      "mrr": null,
+      "ndcg@5": null,
+      "ndcg@10": null
+    },
+    {
+      "source": "synthetic",
+      "impression_id": "warm",
+      "user_id": "U1",
+      "split": "test",
+      "timestamp": "2019-11-15T12:00:00",
+      "history_length": 10,
+      "n_candidates": 3,
+      "n_positive": 3,
+      "metadata_cutoff": "2019-11-15T00:00:00",
+      "metadata_source": "synthetic_counts",
+      "candidate_ids": [
+        "N0",
+        "N1",
+        "N2"
+      ],
+      "labels": [
+        1,
+        1,
+        1
+      ],
+      "scores": [
+        0.9,
+        0.5,
+        0.1
+      ],
+      "categories": [
+        "sports",
+        "finance",
+        "sports"
+      ],
+      "prior_click_counts": [
+        1,
+        2,
+        3
+      ],
+      "groups": {
+        "history_length": [
+          "long"
+        ],
+        "cold_warm": [
+          "warm_only"
+        ],
+        "category_presence": [
+          "category:finance",
+          "category:sports"
+        ]
+      },
+      "auc": null,
+      "mrr": 0.611111111111111,
+      "ndcg@5": 1.0,
+      "ndcg@10": 1.0
+    },
+    {
+      "source": "synthetic",
+      "impression_id": "unknown",
+      "user_id": "U1",
+      "split": "test",
+      "timestamp": "2019-11-15T12:00:00",
+      "history_length": null,
+      "n_candidates": 3,
+      "n_positive": 2,
+      "metadata_cutoff": "2019-11-15T00:00:00",
+      "metadata_source": "synthetic_counts",
+      "candidate_ids": [
+        "N0",
+        "N1",
+        "N2"
+      ],
+      "labels": [
+        1,
+        0,
+        1
+      ],
+      "scores": [
+        0.9,
+        0.5,
+        0.1
+      ],
+      "categories": [
+        null,
+        "finance",
+        "finance"
+      ],
+      "prior_click_counts": [
+        null,
+        null,
+        null
+      ],
+      "groups": {
+        "history_length": [
+          "unknown"
+        ],
+        "cold_warm": [
+          "unknown"
+        ],
+        "category_presence": [
+          "category:finance",
+          "unknown"
+        ]
+      },
+      "auc": 0.5,
+      "mrr": 0.6666666666666666,
+      "ndcg@5": 0.9197207891481876,
+      "ndcg@10": 0.9197207891481876
+    }
+  ],
+  "overall": [
+    {
+      "metric": "auc",
+      "mean": 0.5,
+      "n_impressions": 4,
+      "n_valid": 2,
+      "n_undefined": 2
+    },
+    {
+      "metric": "mrr",
+      "mean": 0.648148148148148,
+      "n_impressions": 4,
+      "n_valid": 3,
+      "n_undefined": 1
+    },
+    {
+      "metric": "ndcg@5",
+      "mean": 0.9464805260987917,
+      "n_impressions": 4,
+      "n_valid": 3,
+      "n_undefined": 1
+    },
+    {
+      "metric": "ndcg@10",
+      "mean": 0.9464805260987917,
+      "n_impressions": 4,
+      "n_valid": 3,
+      "n_undefined": 1
+    }
+  ],
+  "groups": [
+    {
+      "dimension": "category_presence",
+      "group": "category:finance",
+      "metric": "auc",
+      "mean": 0.5,
+      "n_impressions": 4,
+      "n_valid": 2,
+      "n_undefined": 2
+    },
+    {
+      "dimension": "category_presence",
+      "group": "category:finance",
+      "metric": "mrr",
+      "mean": 0.648148148148148,
+      "n_impressions": 4,
+      "n_valid": 3,
+      "n_undefined": 1
+    },
+    {
+      "dimension": "category_presence",
+      "group": "category:finance",
+      "metric": "ndcg@5",
+      "mean": 0.9464805260987917,
+      "n_impressions": 4,
+      "n_valid": 3,
+      "n_undefined": 1
+    },
+    {
+      "dimension": "category_presence",
+      "group": "category:finance",
+      "metric": "ndcg@10",
+      "mean": 0.9464805260987917,
+      "n_impressions": 4,
+      "n_valid": 3,
+      "n_undefined": 1
+    },
+    {
+      "dimension": "category_presence",
+      "group": "category:sports",
+      "metric": "auc",
+      "mean": 0.5,
+      "n_impressions": 3,
+      "n_valid": 1,
+      "n_undefined": 2
+    },
+    {
+      "dimension": "category_presence",
+      "group": "category:sports",
+      "metric": "mrr",
+      "mean": 0.6388888888888888,
+      "n_impressions": 3,
+      "n_valid": 2,
+      "n_undefined": 1
+    },
+    {
+      "dimension": "category_presence",
+      "group": "category:sports",
+      "metric": "ndcg@5",
+      "mean": 0.9598603945740938,
+      "n_impressions": 3,
+      "n_valid": 2,
+      "n_undefined": 1
+    },
+    {
+      "dimension": "category_presence",
+      "group": "category:sports",
+      "metric": "ndcg@10",
+      "mean": 0.9598603945740938,
+      "n_impressions": 3,
+      "n_valid": 2,
+      "n_undefined": 1
+    },
+    {
+      "dimension": "category_presence",
+      "group": "unknown",
+      "metric": "auc",
+      "mean": 0.5,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "category_presence",
+      "group": "unknown",
+      "metric": "mrr",
+      "mean": 0.6666666666666666,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "category_presence",
+      "group": "unknown",
+      "metric": "ndcg@5",
+      "mean": 0.9197207891481876,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "category_presence",
+      "group": "unknown",
+      "metric": "ndcg@10",
+      "mean": 0.9197207891481876,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "cold_warm",
+      "group": "cold_only",
+      "metric": "auc",
+      "mean": null,
+      "n_impressions": 1,
+      "n_valid": 0,
+      "n_undefined": 1
+    },
+    {
+      "dimension": "cold_warm",
+      "group": "cold_only",
+      "metric": "mrr",
+      "mean": null,
+      "n_impressions": 1,
+      "n_valid": 0,
+      "n_undefined": 1
+    },
+    {
+      "dimension": "cold_warm",
+      "group": "cold_only",
+      "metric": "ndcg@5",
+      "mean": null,
+      "n_impressions": 1,
+      "n_valid": 0,
+      "n_undefined": 1
+    },
+    {
+      "dimension": "cold_warm",
+      "group": "cold_only",
+      "metric": "ndcg@10",
+      "mean": null,
+      "n_impressions": 1,
+      "n_valid": 0,
+      "n_undefined": 1
+    },
+    {
+      "dimension": "cold_warm",
+      "group": "mixed",
+      "metric": "auc",
+      "mean": 0.5,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "cold_warm",
+      "group": "mixed",
+      "metric": "mrr",
+      "mean": 0.6666666666666666,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "cold_warm",
+      "group": "mixed",
+      "metric": "ndcg@5",
+      "mean": 0.9197207891481876,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "cold_warm",
+      "group": "mixed",
+      "metric": "ndcg@10",
+      "mean": 0.9197207891481876,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "cold_warm",
+      "group": "unknown",
+      "metric": "auc",
+      "mean": 0.5,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "cold_warm",
+      "group": "unknown",
+      "metric": "mrr",
+      "mean": 0.6666666666666666,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "cold_warm",
+      "group": "unknown",
+      "metric": "ndcg@5",
+      "mean": 0.9197207891481876,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "cold_warm",
+      "group": "unknown",
+      "metric": "ndcg@10",
+      "mean": 0.9197207891481876,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "cold_warm",
+      "group": "warm_only",
+      "metric": "auc",
+      "mean": null,
+      "n_impressions": 1,
+      "n_valid": 0,
+      "n_undefined": 1
+    },
+    {
+      "dimension": "cold_warm",
+      "group": "warm_only",
+      "metric": "mrr",
+      "mean": 0.611111111111111,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "cold_warm",
+      "group": "warm_only",
+      "metric": "ndcg@5",
+      "mean": 1.0,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "cold_warm",
+      "group": "warm_only",
+      "metric": "ndcg@10",
+      "mean": 1.0,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "history_length",
+      "group": "empty",
+      "metric": "auc",
+      "mean": null,
+      "n_impressions": 1,
+      "n_valid": 0,
+      "n_undefined": 1
+    },
+    {
+      "dimension": "history_length",
+      "group": "empty",
+      "metric": "mrr",
+      "mean": null,
+      "n_impressions": 1,
+      "n_valid": 0,
+      "n_undefined": 1
+    },
+    {
+      "dimension": "history_length",
+      "group": "empty",
+      "metric": "ndcg@5",
+      "mean": null,
+      "n_impressions": 1,
+      "n_valid": 0,
+      "n_undefined": 1
+    },
+    {
+      "dimension": "history_length",
+      "group": "empty",
+      "metric": "ndcg@10",
+      "mean": null,
+      "n_impressions": 1,
+      "n_valid": 0,
+      "n_undefined": 1
+    },
+    {
+      "dimension": "history_length",
+      "group": "long",
+      "metric": "auc",
+      "mean": null,
+      "n_impressions": 1,
+      "n_valid": 0,
+      "n_undefined": 1
+    },
+    {
+      "dimension": "history_length",
+      "group": "long",
+      "metric": "mrr",
+      "mean": 0.611111111111111,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "history_length",
+      "group": "long",
+      "metric": "ndcg@5",
+      "mean": 1.0,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "history_length",
+      "group": "long",
+      "metric": "ndcg@10",
+      "mean": 1.0,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "history_length",
+      "group": "medium",
+      "metric": "auc",
+      "mean": 0.5,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "history_length",
+      "group": "medium",
+      "metric": "mrr",
+      "mean": 0.6666666666666666,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "history_length",
+      "group": "medium",
+      "metric": "ndcg@5",
+      "mean": 0.9197207891481876,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "history_length",
+      "group": "medium",
+      "metric": "ndcg@10",
+      "mean": 0.9197207891481876,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "history_length",
+      "group": "unknown",
+      "metric": "auc",
+      "mean": 0.5,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "history_length",
+      "group": "unknown",
+      "metric": "mrr",
+      "mean": 0.6666666666666666,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "history_length",
+      "group": "unknown",
+      "metric": "ndcg@5",
+      "mean": 0.9197207891481876,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    },
+    {
+      "dimension": "history_length",
+      "group": "unknown",
+      "metric": "ndcg@10",
+      "mean": 0.9197207891481876,
+      "n_impressions": 1,
+      "n_valid": 1,
+      "n_undefined": 0
+    }
+  ],
+  "metadata": {
+    "schema_version": "phuc01-v1",
+    "config": {
+      "metrics": [
+        "auc",
+        "mrr",
+        "ndcg@5",
+        "ndcg@10"
+      ],
+      "aggregation": "impression_macro",
+      "ranking_ties": "candidate_order",
+      "undefined_metric": "null_and_count",
+      "invalid_prediction": "error",
+      "history_quantiles": [
+        0.25,
+        0.75
+      ],
+      "history_quantile_method": "linear",
+      "history_fit_split": "train",
+      "cold_warm_grouping": "impression_composition",
+      "category_grouping": "impression_presence_overlapping",
+      "metadata_click_boundary": "strict_before_cutoff"
+    },
+    "history_thresholds": {
+      "q25": 2.5,
+      "q75": 5.5,
+      "n_train": 6,
+      "n_positive_history": 4,
+      "training_sources": [
+        "synthetic"
+      ],
+      "max_train_time": "2019-11-13T12:00:00",
+      "training_impression_keys": [
+        [
+          "synthetic",
+          "train-0"
+        ],
+        [
+          "synthetic",
+          "train-1"
+        ],
+        [
+          "synthetic",
+          "train-2"
+        ],
+        [
+          "synthetic",
+          "train-3"
+        ],
+        [
+          "synthetic",
+          "train-4"
+        ],
+        [
+          "synthetic",
+          "train-5"
+        ]
+      ]
+    },
+    "run": {
+      "data_kind": "synthetic",
+      "fixture_version": "phuc01-v1",
+      "seed": "0 (randomized oracle checks only)",
+      "purpose": "acceptance fixture; not MIND results"
+    },
+    "python": "3.13.5",
+    "libraries": {
+      "numpy": null,
+      "scikit-learn": null,
+      "PyYAML": null,
+      "pytest": null
+    },
+    "invalid_predictions": "error; no silent candidate/impression removal",
+    "category_groups_overlap": true,
+    "undefined_reasons": {
+      "auc": "no_positive_or_no_negative",
+      "mrr": "no_positive",
+      "ndcg@5": "no_positive",
+      "ndcg@10": "no_positive"
+    },
+    "temporal_limitation": "producer guarantees event_time < metadata_cutoff"
+  }
+}
