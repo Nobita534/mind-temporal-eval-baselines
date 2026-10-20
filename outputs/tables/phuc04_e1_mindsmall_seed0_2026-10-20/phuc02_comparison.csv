@@ -1,0 +1,9 @@
+split,metric,reference_mean,mean,absolute_difference,exact_equal,counts_match,passed,reason
+test,auc,0.531751528369352,0.531751528369352,0.0,True,True,True,
+test,mrr,0.23820138108047803,0.23820138108047803,0.0,True,True,True,
+test,ndcg@10,0.3098167064622724,0.3098167064622724,0.0,True,True,True,
+test,ndcg@5,0.24604210472429233,0.24604210472429233,0.0,True,True,True,
+validation,auc,0.5162956361101749,0.5162956361101749,0.0,True,True,True,
+validation,mrr,0.21501765844013485,0.21501765844013485,0.0,True,True,True,
+validation,ndcg@10,0.2778410639545543,0.2778410639545543,0.0,True,True,True,
+validation,ndcg@5,0.21680688078767524,0.21680688078767524,0.0,True,True,True,

@@ -1,0 +1,88 @@
+{
+  "status": "Passed",
+  "finished_utc": "2026-10-20T08:49:03.510147+00:00",
+  "raw": {
+    "impressions": 230117,
+    "candidates": 8584442,
+    "positive_events": 347727
+  },
+  "hashes_checked": 46,
+  "split_union_disjointness": "Passed",
+  "random_full_data_reversed_order": "Passed",
+  "gts_static_identical_membership": "Passed",
+  "phuc01_03_preserved_files": [
+    "src/data_loader/schema.py",
+    "src/data_loader/mind_reader.py",
+    "src/data_loader/temporal_split.py",
+    "src/baselines/base.py",
+    "src/baselines/b1_random.py",
+    "src/baselines/b2_popularity.py",
+    "src/baselines/b3_category.py",
+    "src/baselines/b4_semantic_plm.py",
+    "src/evaluation/metrics.py",
+    "src/evaluation/evaluator.py",
+    "src/evaluation/group_analyzer.py",
+    "configs/eval_config.yaml",
+    "configs/baselines_config.yaml",
+    "configs/content_baselines_config.yaml",
+    "scripts/run_baselines.py",
+    "scripts/cache_plm_embeddings.py",
+    "requirements.txt",
+    "tests/test_metrics_edge_cases.py",
+    "tests/test_temporal_leakage.py",
+    "tests/test_content_baselines.py"
+  ],
+  "runs": [
+    {
+      "protocol": "gts_clean",
+      "split": "validation",
+      "impressions": 30270,
+      "candidate_scores": 1222429,
+      "independent_counts_and_raw_alignment": "Passed",
+      "per_impression_aggregation": "Passed"
+    },
+    {
+      "protocol": "gts_clean",
+      "split": "test",
+      "impressions": 73152,
+      "candidate_scores": 2740998,
+      "independent_counts_and_raw_alignment": "Passed",
+      "per_impression_aggregation": "Passed"
+    },
+    {
+      "protocol": "random",
+      "split": "validation",
+      "impressions": 23011,
+      "candidate_scores": 855547,
+      "independent_counts_and_raw_alignment": "Passed",
+      "per_impression_aggregation": "Passed"
+    },
+    {
+      "protocol": "random",
+      "split": "test",
+      "impressions": 23013,
+      "candidate_scores": 863574,
+      "independent_counts_and_raw_alignment": "Passed",
+      "per_impression_aggregation": "Passed"
+    },
+    {
+      "protocol": "gts_static",
+      "split": "validation",
+      "impressions": 30270,
+      "candidate_scores": 1222429,
+      "independent_counts_and_raw_alignment": "Passed",
+      "per_impression_aggregation": "Passed"
+    },
+    {
+      "protocol": "gts_static",
+      "split": "test",
+      "impressions": 73152,
+      "candidate_scores": 2740998,
+      "independent_counts_and_raw_alignment": "Passed",
+      "per_impression_aggregation": "Passed"
+    }
+  ],
+  "total_impressions_checked": 252868,
+  "total_candidate_scores_checked": 9645975,
+  "method": "Direct TSV/CSV parsing and independent Counter sources; full raw alignment, all scores and aggregate means checked; no E1 production helpers imported"
+}

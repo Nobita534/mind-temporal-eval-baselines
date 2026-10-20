@@ -17,7 +17,8 @@ Repository này cung cấp **Bộ khung Đánh giá Chuẩn hóa theo Thời gia
 
 Đã triển khai API schema, metric, evaluator và phân nhóm; B1/B2 và runner GTS được
 mô tả ở mục PHUC-02 bên dưới. B3/B4 đã được nghiệm thu trên MIND-small theo protocol
-PHUC-03 được duyệt (seed 0, PLM đóng băng). E1 và statistical tests vẫn là placeholder. Các kết quả
+PHUC-03 được duyệt (seed 0, PLM đóng băng). E1 có runner/config riêng ở mục PHUC-04;
+statistical tests vẫn là placeholder. Các kết quả
 trong `outputs/tables/phuc01_synthetic_2026-10-19/` chỉ là **synthetic fixtures**,
 không phải kết quả thực nghiệm MIND-small.
 
@@ -248,12 +249,107 @@ Kết quả PHUC-02 seed 0 chỉ là baseline ở cấu hình đã duyệt; chư
 seed hoặc kết luận về leakage E1. Cold/warm ở đây là chưa/đã có click trong nguồn
 impression quan sát, không phải chưa/đã có click trong toàn bộ lịch sử của MIND.
 
+## PHUC-04: E1 — ảnh hưởng của temporal leakage lên Popularity
+
+**Trạng thái:** Verified ngày 2026-10-20 cho protocol seed 0 đã duyệt. Ba protocol
+đã chạy thật; 8/8 metric GTS sạch khớp chính xác PHUC-02. Bằng chứng AC1–AC3 nằm
+trong [validation log](outputs/logs/phuc04_validation.md).
+
+Chạy **B2 cumulative, seed 0** với cùng evaluator/config và đầy đủ candidate mỗi
+impression. Kết quả theo từng impression rồi macro-average AUC/MRR/nDCG@5/nDCG@10;
+stable tie theo thứ tự candidate, tin chưa có click nhận score 0. Không tune trên
+validation/test. Ngày trong bảng là tháng 11/2019.
+
+**Ý nghĩa timestamp:** mỗi positive label đóng góp một sự kiện mang **timestamp của
+impression**, không phải thời gian click thực tế (MIND không cung cấp trường đó).
+Đây là proxy thời gian cho bộ đếm. Không đưa `History` vào count hoặc gán timestamp
+cho từng mục History.
+
+| Protocol | Split | Nguồn count validation | Nguồn count test | Leakage |
+|---|---|---|---|---|
+| `gts_clean` | Train 09–13, validation 14, test 15 | Train 09–13, `< 14/11 00:00` | Train+validation 09–14, `< 15/11 00:00` | Không có theo proxy đã duyệt |
+| `random` | 80/10/10 trên tất cả impression 09–15 | Random-train, không lọc timestamp | Random-train+validation, không lọc timestamp | Nguồn train có thể chứa sự kiện tương lai; không chứa chính impression evaluation |
+| `gts_static` | Giống GTS sạch | Toàn bộ 09–15 | Toàn bộ 09–15 | Cố ý dùng cả nhãn evaluation và sự kiện tương lai |
+
+Random split sắp xếp theo digest SHA-256 của UTF-8 compact JSON
+`[seed, source, impression_id]` (`ensure_ascii=False`), phá tie bằng
+`(source, impression_id)`. Train nhận `floor(8N/10)`, validation nhận `floor(N/10)`,
+test nhận phần còn lại. Khóa source trong CLI cố định là `MINDsmall_train` và
+`MINDsmall_dev`; ID trùng giữa hai source vẫn là hai impression khác nhau.
+Thứ tự đọc dòng/file không ảnh hưởng membership hoặc thứ tự kết quả split.
+Không xáo candidate, không tách một impression ra nhiều tập.
+
+Ví dụ: một candidate chỉ có positive label trong impression test ngày 15/11 có
+score GTS sạch bằng 0; nhánh Static đếm positive đó. Random có thể dùng positive
+ngày 15 để chấm một impression ngày 09 nếu hai impression rơi vào train/test tương ứng.
+
+### Chạy và nghiệm thu
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests/test_e1_leakage.py tests/test_temporal_leakage.py tests/test_metrics_edge_cases.py tests/test_content_baselines.py -q -p no:cacheprovider
+.\.venv\Scripts\python.exe -m scripts.run_e1_leakage --help
+.\.venv\Scripts\python.exe -m scripts.run_e1_leakage --output-dir outputs/tables/my_e1_run --predictions-dir outputs/predictions/my_e1_run --splits-dir data/splits/my_e1_run
+```
+
+Ba thư mục output phải mới, riêng biệt, không lồng nhau; runner từ chối ghi đè
+artifact cũ. Không cần dependency mới hoặc embedding cache. Các flags:
+
+- `--train-behaviors`, `--dev-behaviors`, `--news PATH [PATH ...]`: mặc định dữ liệu
+  MIND-small trong `data/raw/train/` và `data/raw/dev/`.
+- `--config`, `--eval-config`: mặc định `configs/e1_protocols.yaml` và
+  `configs/eval_config.yaml`; thay đổi protocol chưa được duyệt sẽ bị từ chối.
+- `--reference-dir`: mặc định `outputs/tables/phuc02_mindsmall_seed0_2026-10-19`.
+  Cần `manifest.json` và `metrics.csv` của lượt PHUC-02 completed, cùng input
+  checksum, seed, data kind và evaluation config. Dữ liệu synthetic phải có
+  reference PHUC-02 tương ứng và truyền `--data-kind synthetic`.
+- `--output-dir`, `--predictions-dir`, `--splits-dir`: bắt buộc, lưu các loại
+  artifact dưới đây. Seed 0 cố định trong protocol hiện được duyệt.
+
+GTS sạch được đối chiếu **cả validation và test** với B2 cumulative PHUC-02:
+bốn mean/split, `n_impressions`, `n_valid`, `n_undefined`. CSV được đọc ở độ chính
+xác đầy đủ; tolerance tuyệt đối `1e-12`, tương đối 0, đồng thời ghi exact equality.
+Nếu khác, manifest ghi `failed` với lý do và runner dừng trước hai nhánh leaky.
+Sai input/config/seed/reference status bị từ chối trước khi tạo output.
+Phải giải thích sai khác trước nghiệm thu, không thay reference để làm khớp kết quả.
+
+### Artifact và giới hạn diễn giải
+
+- Summary: `metrics.csv` (24 dòng: ba protocol × hai split × bốn metric),
+  `inflation.csv` (16 dòng), `phuc02_comparison.csv` (8 dòng), `manifest.json`
+  và `<protocol>/<split>/overall.csv`.
+- Predictions: `<protocol>/<split>/{per_impression.csv,metadata.json}`; giữ đầy đủ
+  ID/label/score/thứ tự candidate. Các file lớn được Git-ignore.
+- Splits: `<protocol>/membership.csv`, khóa source+ID và timestamp. Manifest giữ
+  checksum membership, split sizes/click counts/candidate counts/time bounds;
+  cả Static và GTS lưu membership riêng nhưng có cùng checksum.
+- Manifest ghi resolved config, seed, input/code/config/artifact hashes, phiên bản
+  runtime, nguồn count và audit overlap/nguồn tương lai. Audit pair count đếm một
+  source event nhiều lần nếu nó khả dụng cho nhiều evaluation impressions;
+  không có nghĩa mọi event đó thuộc một candidate đang được chấm.
+
+`absolute_delta = mean_protocol - mean_gts_clean`;
+`relative_delta_pct = 100 * absolute_delta / mean_gts_clean`.
+Giữ nguyên delta âm. Mẫu số 0 → relative delta null; metric thiếu → cả delta null,
+có reason; JSON dùng null, CSV dùng ô trống. Không làm tròn trước khi so sánh.
+
+E1 báo **metric tổng thể**. Không fit ngưỡng history cho cả ba nhánh, không truyền
+`prior_click_count` hoặc cutoff metadata để tránh trình bày count leaky như lịch sử
+hợp lệ. Evaluator PHUC-01 và source/config PHUC-02–03 giữ nguyên. Các nhãn cohort
+phụ trong per-impression output không phải kết quả phân tích nhóm E1:
+history không rỗng/cold-warm là `unknown`; category vẫn mô tả đủ candidate của impression.
+
+Static và GTS sạch so sánh cùng impression. Random đổi thành phần và kích thước
+tập test, nên delta của Random phản ánh cả split composition lẫn temporal leakage.
+Kết quả một seed là sơ bộ; không suy ra ý nghĩa thống kê, click time thực, hiệu quả
+online hoặc ảnh hưởng trên mô hình graph. Xem [WORK_STATUS](docs/WORK_STATUS.md)
+và [validation log PHUC-04](outputs/logs/phuc04_validation.md) cho nghiệm thu thực tế.
+
 ## 📂 Cấu trúc thư mục
 
 ```text
 mind-temporal-eval-baselines/
 ├── docs/                           # Tài liệu thiết kế và kế hoạch thực hiện
-│   ├── proposal-v2.md              # Bản đề xuất nghiên cứu chi tiết (Mini Proposal v2)
+│   ├── SNA-Proposal-v2.md          # Bản đề xuất nghiên cứu chi tiết (Mini Proposal v2)
 │   └── project-plan.md             # Kế hoạch triển khai các tickets (PHUC-01 -> PHUC-05)
 │
 ├── configs/                        # Cấu hình tham số và random seed phục vụ tái lập kết quả
@@ -303,5 +399,5 @@ mind-temporal-eval-baselines/
 ```
 
 ## 📄 Tài liệu tham khảo nội bộ
-- [Chi tiết Đề xuất Nghiên cứu (Mini Proposal v2)](docs/proposal-v2.md)
+- [Chi tiết Đề xuất Nghiên cứu (Mini Proposal v2)](docs/SNA-Proposal-v2.md)
 - [Kế hoạch Thực hiện Chi tiết (Project Plan)](docs/project-plan.md)

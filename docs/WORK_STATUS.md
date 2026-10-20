@@ -7,9 +7,9 @@
 | Repository | `mind-temporal-eval-baselines` |
 | Dataset | MIND-small |
 | Scope | PHUC-01 đến PHUC-05 |
-| Project Stage | PHUC-01–03 Verified |
-| Last Updated | 2026-10-19 |
-| Current Focus | PHUC-03 đã nghiệm thu B3/B4 trên MIND-small; chờ người dùng review/xác nhận |
+| Project Stage | PHUC-01–04 Verified |
+| Last Updated | 2026-10-20 |
+| Current Focus | PHUC-04 đã nghiệm thu E1 seed 0; chờ người dùng review/xác nhận, PHUC-05 chưa bắt đầu |
 
 Nguồn phạm vi: [Project Plan](project-plan.md). Ràng buộc nghiên cứu: [Proposal](SNA-Proposal-v2.md), mục 3.2, 4.2–4.3, 5 và Appendix A.2/E1. Quy trình làm việc: [AGENTS.md](../AGENTS.md).
 
@@ -22,7 +22,7 @@ Placeholder không phải bằng chứng triển khai. Acceptance criteria dư�
 | PHUC-01 | Evaluator & Metrics | Verified | 2026-10-19 |
 | PHUC-02 | Random & Popularity | Verified | 2026-10-19 |
 | PHUC-03 | Category & Semantic PLM | Verified | 2026-10-19 |
-| PHUC-04 | E1 Temporal Leakage | Not Started | 2026-10-19 |
+| PHUC-04 | E1 Temporal Leakage | Verified | 2026-10-20 |
 | PHUC-05 | Testing & Reproducibility | Not Started | 2026-10-19 |
 
 ## Ticket Status Definitions
@@ -48,7 +48,7 @@ Các mục dưới giữ nguyên vấn đề ban đầu; quyết định và b�
 | OD-03 | **Resolved cho PHUC-02, 2026-10-19:** cutoff đầu ngày; nguồn click impression train; không đếm History; cửa sổ `[d-24h,d)`. Kiểm thử biên, nguồn và audit thật Passed. Không suy rộng quyết định này thành protocol E1 hoặc Ghist; History vẫn không có timestamp từng click. | 02–04 |
 | OD-04 | Chốt ngưỡng history từ train và cách đánh giá cold/warm/category trong impression chứa nhiều nhóm; không đồng nhất cold news với thời gian xuất bản. | 01, 05 |
 | OD-05 | **Resolved cho PHUC-03, 2026-10-19:** người dùng duyệt subcategory frequency/category fallback; History của chính impression, toàn bộ ID; frozen MiniLM title + abstract, revision cố định, 256 word pieces, mean/cosine, fallback 0; xem config và validation log. Không suy ra History có trước đầu ngày. | 03 |
-| OD-06 | Chốt biến thể B2 và nguồn click cho Random Split; tách split khỏi chính sách static popularity. Ghi hạn chế so sánh khi test set thay đổi và xử lý chênh lệch tương đối có mẫu số 0. | 04 |
+| OD-06 | Ban đầu cần chốt B2/nguồn click Random, phân biệt split/static và mẫu số 0. **Resolved qua phê duyệt ngày 2026-10-20:** B2 cumulative, seed 0; Random train → validation, train+validation → test, bỏ lọc thời gian; Static dùng toàn kỳ kể cả nhãn evaluation; History không tham gia. Δ% mẫu số 0 trả null; giữ Δ âm, nêu test-set shift. Đã kiểm chứng bằng tests, run thật và audit toàn bộ score; xem validation log PHUC-04. | 04 |
 | OD-07 | Xác nhận deadline/ngân sách: Plan ghi 19/10, 6 giờ; Proposal có lịch Phúc đến 27/10. Chốt phạm vi nhiều seed; Plan đặt tổng hợp nhiều seed/kiểm định trong Future. | 05, toàn phạm vi |
 | OD-08 | **Resolved cho nghiệm thu PHUC-01, 2026-10-19.** Ban đầu pip trong phiên Codex bị chặn socket (WinError 10013), cache không có wheels. Người dùng đã cài requirements qua VS Code và cung cấp output pytest: 44 passed, 42 subtests passed, không Failed/Skipped. Không suy ra quyền mạng của sandbox Codex đã thay đổi. | 01 |
 | OD-09 | **Resolved cho PHUC-03, 2026-10-19:** ban đầu pip/network probe WinError 10013, cache CLI thiếu torch. Người dùng cài dependencies/tạo cache qua VS Code; Codex kiểm tra cache, encoder thật offline và chạy B4 thành công. Không suy ra quyền mạng sandbox đã đổi; không phải lỗi Python 3.13. | 03 |
@@ -56,6 +56,8 @@ Các mục dưới giữ nguyên vấn đề ban đầu; quyết định và b�
 Khi giải quyết: giữ ID, ghi ngày, quyết định, xác nhận của người dùng và ảnh hưởng; không xóa lịch sử quan trọng.
 
 **2026-10-19 — phê duyệt PHUC-02:** người dùng đã cung cấp `data/raw/train/` và `data/raw/dev/`, đồng ý kế hoạch và yêu cầu thực hiện. OD-01 được gỡ cho dữ liệu B1/B2 (PLM/cache cho PHUC-03 chưa được xác nhận). OD-03 chốt cho PHUC-02: cutoff đầu ngày; B2 tích lũy dùng click impression trước cutoff, B2-24h dùng `[cutoff - 24h, cutoff)`, không đếm History. Validation 14/11 dùng click 09–13/11; test/dev 15/11 dùng click 09–14/11. Cold/warm lấy count tích lũy của cùng nguồn quan sát, không phải toàn bộ Ghist. Giữ seed mặc định 0; chưa triển khai E1 hoặc tổng hợp nhiều seed.
+
+**2026-10-20 — phê duyệt PHUC-04:** người dùng duyệt cả protocol và kế hoạch, bổ sung: timestamp của positive label là timestamp impression, không phải thời gian click thực; random split phải độc lập thứ tự đọc file dựa seed + `(source, impression_id)` và có unit test; GTS sạch phải đối chiếu B2 cumulative PHUC-02, báo nguyên nhân nếu lệch trước nghiệm thu. OD-03 được chốt riêng cho E1: nhánh sạch giữ cutoff ngày PHUC-02; nhánh Random/Static cố ý bỏ cutoff như OD-06. Tổng thể bốn metric dùng nguyên evaluator, không fit ngưỡng nhóm, không gắn count leaky vào prior-click metadata. Random dùng SHA-256 và kích thước floor(80%)/floor(10%)/phần còn lại. Không sửa source/config PHUC-01–03, không thêm dependencies, không commit/push hoặc chuyển PHUC-05.
 
 **2026-10-19 — kế hoạch PHUC-01 được người dùng phê duyệt ("ok"):** OD-02/OD-04 chốt MRR nhiều positive theo MIND, stable tie theo thứ tự candidate, metric không xác định trả null và đếm riêng; schema strict. History rỗng tách riêng; Q25/Q75 học từ history dương của train. Cold/warm là cohort impression cold_only/warm_only/mixed/unknown; category là cohort có chứa category, cho phép chồng lấp, luôn giữ đầy đủ candidate. Metadata có cutoff không muộn hơn impression, chỉ chứa click trước cutoff. Cho phép thêm/cài NumPy, scikit-learn, PyYAML, pytest trong `.venv`. OD-03 về nguồn History và cách dựng B2 vẫn mở; không được suy ra từ hợp đồng metadata của evaluator.
 
@@ -199,12 +201,12 @@ Chờ người dùng review/xác nhận trước kế hoạch PHUC-04. Giữ cac
 
 #### B. Task Checklist
 
-- [ ] Chạy B2 với Global Temporal Split đúng thời gian.
-- [ ] Chạy B2 với Random Split 80/10/10 trên 09–15/11/2019.
-- [ ] Chạy B2 với GTS nhưng popularity tĩnh dùng toàn kỳ 09–15/11/2019.
-- [ ] Giữ cấu hình mô hình/evaluator chung, chỉ thay các yếu tố protocol đã định nghĩa.
-- [ ] Tính chênh lệch tuyệt đối và tương đối so với GTS sạch.
-- [ ] Kiểm tra kích thước từng split và gắn nhãn kết quả có leakage.
+- [x] Chạy B2 với Global Temporal Split đúng thời gian.
+- [x] Chạy B2 với Random Split 80/10/10 trên 09–15/11/2019.
+- [x] Chạy B2 với GTS nhưng popularity tĩnh dùng toàn kỳ 09–15/11/2019.
+- [x] Giữ cấu hình mô hình/evaluator chung, chỉ thay các yếu tố protocol đã định nghĩa.
+- [x] Tính chênh lệch tuyệt đối và tương đối so với GTS sạch.
+- [x] Kiểm tra kích thước từng split và gắn nhãn kết quả có leakage.
 
 #### C. Acceptance Criteria
 
@@ -214,21 +216,26 @@ Chờ người dùng review/xác nhận trước kế hoạch PHUC-04. Giữ cac
 
 #### D. Implementation Evidence
 
-- Files/modules đã triển khai: chưa có.
-- Tests/experiment runs: **Not Run** — pipeline E1 chưa triển khai; evaluator PHUC-01 và B2 PHUC-02 đã Verified.
-- Outputs/logs: chưa có; chưa có bằng chứng đạt AC1–AC3.
+- Files: `scripts/run_e1_leakage.py`, `configs/e1_protocols.yaml`, `src/data_loader/random_split.py`, `src/baselines/e1_popularity.py`, `src/evaluation/leakage_comparison.py`, `tests/test_e1_leakage.py`, README và log. Source/config/tests PHUC-01–03 không đổi; không thêm dependency.
+- Tests: `.venv\Scripts\python.exe -m pytest tests/test_e1_leakage.py tests/test_temporal_leakage.py tests/test_metrics_edge_cases.py tests/test_content_baselines.py -q -p no:cacheprovider` — **156 Passed, 42 subtests Passed, 0 Failed/Skipped**, 34.97 s; gồm 33 test E1 và 123 regression. Unit tests kiểm tra random đảo/trộn/xen kẽ thứ tự, whole-impression, cutoff, nguồn future/self-label, timestamp proxy, ties/multi-positive/null, delta âm/mẫu số 0 và dừng khi reference lệch.
+- Run thật: exit 0, manifest `completed`, 6 protocol/split runs, seed 0. GTS train/validation/test = 126.695/30.270/73.152; Random = 184.093/23.011/23.013. Tất cả metric dùng đủ impression, `n_undefined=0`.
+- **Yêu cầu đối chiếu PHUC-02 Passed:** 8/8 mean B2 cumulative trên validation/test **khớp chính xác**, absolute difference 0 và toàn bộ denominators khớp; kiểm tra cả input hashes/config/seed. Không có mismatch cần giải trình.
+- Audit độc lập **Passed**: 252.868 lượt evaluation impression, **9.645.975 candidate scores**, 46 checksum; dựng Counter trực tiếp từ TSV, đối chiếu toàn bộ candidate/label/user/time/history-length và score/mean; kiểm tra full-data random reversed order, partition union/disjointness, GTS/Static membership giống hệt. 20 source/config/test files PHUC-01–03 không có Git diff.
+- Evidence: [validation log](../outputs/logs/phuc04_validation.md), [audit JSON](../outputs/logs/phuc04_artifact_audit.json), [metrics](../outputs/tables/phuc04_e1_mindsmall_seed0_2026-10-20/metrics.csv), [deltas](../outputs/tables/phuc04_e1_mindsmall_seed0_2026-10-20/inflation.csv), [PHUC-02 comparison](../outputs/tables/phuc04_e1_mindsmall_seed0_2026-10-20/phuc02_comparison.csv), [manifest](../outputs/tables/phuc04_e1_mindsmall_seed0_2026-10-20/manifest.json). Split membership/predictions được lưu ở thư mục riêng `data/splits/phuc04_e1_mindsmall_seed0_2026-10-20` / `outputs/predictions/phuc04_e1_mindsmall_seed0_2026-10-20`, có checksum và Git-ignore.
+- Test AUC/MRR/nDCG@5/nDCG@10: GTS sạch **0.531752/0.238201/0.246042/0.309817**; Random **0.600933/0.298722/0.320846/0.374188**; Static **0.599364/0.289196/0.311321/0.372301** (chỉ làm tròn khi hiển thị). Static cùng test set tăng AUC 0.067612 (+12.7150%) và nDCG@10 0.062485 (+20.1683%). Random thay test set, không quy toàn bộ delta cho leakage.
+- **AC1 Passed:** đủ bốn metric/ba protocol, source/split/config và candidate integrity, mandatory PHUC-02 parity. **AC2 Passed:** đủ bảng delta, edge cases và isolation/order-independent split được test/audit. **AC3 Passed:** kết luận dựa trên số liệu thật với giới hạn so sánh đã nêu. CLI help và `git diff --check` Passed. Multi-seed/graph/statistical tests **Not Run** vì ngoài phạm vi được duyệt.
 
 #### E. Blockers & Open Decisions
 
-Dữ liệu và B2 đã có từ PHUC-02. OD-03/OD-06 cho E1 vẫn cần xác nhận nguồn click từng protocol và biến thể B2; không tự coi protocol PHUC-02 là quyết định cho các nhánh leaky.
+Lịch sử: OD-03/OD-06 từng mở về nguồn click/biến thể B2; được người dùng duyệt ngày 2026-10-20 và đã kiểm chứng. Không còn blocker cho PHUC-04 đã duyệt. Giữ giới hạn: timestamp chỉ là proxy impression; không có actual click time/History timestamps; một seed, Random đổi test/source composition. Không suy rộng kết quả sang graph hoặc ý nghĩa thống kê.
 
 #### F. Next Actions
 
-Phụ thuộc PHUC-01 và PHUC-02. Trình ma trận protocol, nguồn dữ liệu và phép so sánh để duyệt trước khi triển khai `scripts/run_e1_leakage.py` / `configs/e1_protocols.yaml`.
+Chờ người dùng review kết quả/validation log và xác nhận bước tiếp theo. Không commit/push; không chuyển PHUC-05 khi chưa được xác nhận.
 
 #### G. Last Updated
 
-2026-10-19 — khởi tạo tracker, chưa triển khai.
+2026-10-20 — PHUC-04 Verified, AC1–AC3 và ba yêu cầu bổ sung Passed.
 
 ### PHUC-05 — Testing & Reproducibility
 
@@ -258,7 +265,7 @@ Kiểm chứng luồng chung, chuẩn hóa artifact và bàn giao evaluator có 
 
 #### E. Blockers & Open Decisions
 
-OD-01/OD-09 đã gỡ; OD-07 còn mở. PHUC-01–03 đã Verified, PHUC-04 chưa triển khai. Cần duyệt phạm vi tái chạy và tiêu chí so sánh phù hợp tài nguyên.
+OD-01/OD-09 đã gỡ; OD-07 còn mở. Phụ thuộc PHUC-01–04 đã Verified (cập nhật dependency ngày 2026-10-20; PHUC-05 vẫn Not Started). Cần duyệt phạm vi tái chạy và tiêu chí so sánh phù hợp tài nguyên.
 
 #### F. Next Actions
 
@@ -296,3 +303,5 @@ Các đường dẫn bằng chứng chỉ được thêm khi artifact thực s�
 | 2026-10-19 | PHUC-03 environment | Hai pip attempts thất bại; PyPI probe WinError 10013; cache CLI thiếu torch. | OD-09 Open, không có cache PLM thật; không đổi quyền mạng, không giả lập kết quả B4 thật. |
 | 2026-10-19 | PHUC-03 verification | 123 tests + 42 subtests Passed; B3 MIND-small validation/test completed; audit 100 impressions/4.016 scores Passed sau sửa tên cột của lệnh audit; 14 code hashes khớp. Xem validation log và manifest. | In Progress → Implemented; AC1 Passed, AC2/AC3 Partial. Chờ dependencies/cache/B4 thật; chưa Verified, không chuyển PHUC-04, không commit/push. |
 | 2026-10-19 | PHUC-03 real-cache/B4 acceptance | Người dùng cài dependencies/tạo cache; Codex xác minh 65.238 embeddings, pinned revision/version/checksum và encoder parity 8 tin. Chỉ B4 chạy validation/test thành công; 123 tests + 42 subtests Passed; audit cosine/label isolation/cutoff trên 100 impressions/4.016 candidates Passed. | Implemented → Verified, AC1–AC3 Passed theo protocol được duyệt. OD-01/OD-09 resolved; giữ hạn chế History/seed 0 và lịch sử lỗi. Không rerun B3, không sửa source/config, không chuyển PHUC-04 hoặc commit/push. |
+| 2026-10-20 | PHUC-04 approval/implementation | Người dùng duyệt protocol E1 cumulative seed 0 và ba yêu cầu timestamp proxy, random order independence, mandatory PHUC-02 comparison. Đã viết runner/config, modules riêng và test. | Not Started → In Progress; OD-03/OD-06 được chốt cho E1. Chờ kết quả test và run thật; không sửa PHUC-01–03. |
+| 2026-10-20 | PHUC-04 verification | 156 tests + 42 subtests Passed; 6 real runs completed. 8/8 clean metrics và denominators khớp chính xác PHUC-02. Audit 252.868 evaluation occurrences / 9.645.975 scores, 46 hashes, full-data random reversed order và source/config preservation Passed. Log/metrics/deltas/manifest đã lưu. | In Progress → Verified; AC1–AC3 đạt. Static test AUC tăng 12.7150%, nDCG@10 tăng 20.1683% tương đối trên cùng test set; Random có test-set shift. Không có failed/skipped checks; multi-seed/graph/statistics ngoài phạm vi. Không commit/push hoặc triển khai PHUC-05. |
