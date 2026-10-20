@@ -7,9 +7,9 @@
 | Repository | `mind-temporal-eval-baselines` |
 | Dataset | MIND-small |
 | Scope | PHUC-01 đến PHUC-05 |
-| Project Stage | PHUC-01–04 Verified |
+| Project Stage | PHUC-01–05 Verified trong phạm vi seed 0 đã duyệt |
 | Last Updated | 2026-10-20 |
-| Current Focus | PHUC-04 đã nghiệm thu E1 seed 0; chờ người dùng review/xác nhận, PHUC-05 chưa bắt đầu |
+| Current Focus | Đã hoàn tất bàn giao PHUC-01–05; chờ người dùng review và chỉ dẫn tiếp theo |
 
 Nguồn phạm vi: [Project Plan](project-plan.md). Ràng buộc nghiên cứu: [Proposal](SNA-Proposal-v2.md), mục 3.2, 4.2–4.3, 5 và Appendix A.2/E1. Quy trình làm việc: [AGENTS.md](../AGENTS.md).
 
@@ -23,7 +23,7 @@ Placeholder không phải bằng chứng triển khai. Acceptance criteria dư�
 | PHUC-02 | Random & Popularity | Verified | 2026-10-19 |
 | PHUC-03 | Category & Semantic PLM | Verified | 2026-10-19 |
 | PHUC-04 | E1 Temporal Leakage | Verified | 2026-10-20 |
-| PHUC-05 | Testing & Reproducibility | Not Started | 2026-10-19 |
+| PHUC-05 | Testing & Reproducibility | Verified | 2026-10-20 |
 
 ## Ticket Status Definitions
 
@@ -49,7 +49,7 @@ Các mục dưới giữ nguyên vấn đề ban đầu; quyết định và b�
 | OD-04 | Chốt ngưỡng history từ train và cách đánh giá cold/warm/category trong impression chứa nhiều nhóm; không đồng nhất cold news với thời gian xuất bản. | 01, 05 |
 | OD-05 | **Resolved cho PHUC-03, 2026-10-19:** người dùng duyệt subcategory frequency/category fallback; History của chính impression, toàn bộ ID; frozen MiniLM title + abstract, revision cố định, 256 word pieces, mean/cosine, fallback 0; xem config và validation log. Không suy ra History có trước đầu ngày. | 03 |
 | OD-06 | Ban đầu cần chốt B2/nguồn click Random, phân biệt split/static và mẫu số 0. **Resolved qua phê duyệt ngày 2026-10-20:** B2 cumulative, seed 0; Random train → validation, train+validation → test, bỏ lọc thời gian; Static dùng toàn kỳ kể cả nhãn evaluation; History không tham gia. Δ% mẫu số 0 trả null; giữ Δ âm, nêu test-set shift. Đã kiểm chứng bằng tests, run thật và audit toàn bộ score; xem validation log PHUC-04. | 04 |
-| OD-07 | Xác nhận deadline/ngân sách: Plan ghi 19/10, 6 giờ; Proposal có lịch Phúc đến 27/10. Chốt phạm vi nhiều seed; Plan đặt tổng hợp nhiều seed/kiểm định trong Future. | 05, toàn phạm vi |
+| OD-07 | Ban đầu cần xác nhận lịch/ngân sách: Plan ghi 19/10, 6 giờ; Proposal ghi lịch Phúc đến 27/10, nhiều seed rộng hơn. **Resolved cho PHUC-05, 2026-10-20:** người dùng duyệt bàn giao seed 0 theo Plan; nhiều seed/kiểm định thuộc Future; ghi ngày hoàn thành thực tế và bảo lưu các mốc kế hoạch cũ, không tự đổi deadline hoặc bỏ acceptance vì ngân sách cũ. | 05, toàn phạm vi |
 | OD-08 | **Resolved cho nghiệm thu PHUC-01, 2026-10-19.** Ban đầu pip trong phiên Codex bị chặn socket (WinError 10013), cache không có wheels. Người dùng đã cài requirements qua VS Code và cung cấp output pytest: 44 passed, 42 subtests passed, không Failed/Skipped. Không suy ra quyền mạng của sandbox Codex đã thay đổi. | 01 |
 | OD-09 | **Resolved cho PHUC-03, 2026-10-19:** ban đầu pip/network probe WinError 10013, cache CLI thiếu torch. Người dùng cài dependencies/tạo cache qua VS Code; Codex kiểm tra cache, encoder thật offline và chạy B4 thành công. Không suy ra quyền mạng sandbox đã đổi; không phải lỗi Python 3.13. | 03 |
 
@@ -245,11 +245,11 @@ Kiểm chứng luồng chung, chuẩn hóa artifact và bàn giao evaluator có 
 
 #### B. Task Checklist
 
-- [ ] Chạy smoke test toàn pipeline trên dữ liệu nhỏ.
-- [ ] Ghi seed, resolved config, phiên bản thư viện và model embedding.
-- [ ] Chuẩn hóa định dạng kết quả.
-- [ ] Viết hướng dẫn B5, B6 và THG-Rec dùng lại evaluator.
-- [ ] Ghi rõ phần hoàn thành, blocker và kết quả chưa chính thức.
+- [x] Chạy smoke test toàn pipeline trên dữ liệu nhỏ.
+- [x] Ghi seed, resolved config, phiên bản thư viện và model embedding.
+- [x] Chuẩn hóa định dạng kết quả.
+- [x] Viết hướng dẫn B5, B6 và THG-Rec dùng lại evaluator.
+- [x] Ghi rõ phần hoàn thành, blocker và kết quả chưa chính thức.
 
 #### C. Acceptance Criteria
 
@@ -259,21 +259,27 @@ Kiểm chứng luồng chung, chuẩn hóa artifact và bàn giao evaluator có 
 
 #### D. Implementation Evidence
 
-- Files/modules/hướng dẫn chạy đã triển khai cho ticket: chưa có; tài liệu scaffolding không chứng minh workflow chạy được.
-- Tests: **Not Run** — chưa có pipeline/test logic.
-- Outputs/logs: chưa có; chưa có bằng chứng đạt AC1–AC3.
+- Files: `src/data_loader/prediction_reader.py`, `scripts/evaluate_predictions.py`, `src/evaluation/handoff.py`, `scripts/build_handoff.py`, `tests/test_smoke_pipeline.py`, `tests/test_prediction_reader.py`, `tests/test_handoff.py`, `docs/HANDOFF.md`, README và validation evidence. Không sửa metric/baseline/protocol/config PHUC-01–04, không thêm dependency.
+- `.venv\Scripts\python.exe -m pytest tests/ -q -p no:cacheprovider --junitxml outputs/logs/phuc05_pytest.xml` — **199 Passed, 42 subtests Passed, 0 Failed/Skipped**, 22.41 s. Gồm 156 tests cũ + 43 PHUC-05. XML ghi 241 entries do cộng subtests, không phải 241 independent tests.
+- Smoke synthetic **Passed hai lần**: B1, hai B2, B3, B4 synthetic cache, ba E1 protocols, external CLI và handoff CLI. 17 per-impression output files mỗi lượt, ordered splits và metric CSVs giống byte-for-byte. Synthetic không xuất hiện trong bundle MIND-small.
+- Score replay thật **Passed**: first 20 validation + 20 test/model, 5 configurations → 200 model-impression occurrences / **8.615 candidate scores**. Tất cả khớp chính xác score đã lưu, max absolute error 0 (B4 tolerance cho phép 1e-6); lặp scoring cũng exact. Cache MiniLM thật 65.238×384, pinned revision/checksums được loader kiểm tra; không download/re-encode.
+- External CLI trên toàn bộ B2 cumulative **Passed**, exit 0 cả hai split: validation 30.270 impression / 1.222.429 candidates; test 73.152 / 2.740.998. **8 overall rows + 176 group rows khớp chính xác PHUC-02**, cả hash CSV; Q25=8/Q75=42 từ 126.695 train rows. Không tuning, không benchmark mới.
+- Handoff assembly **Passed**, exit 0: **64 metric rows = 40 baseline + 24 E1**, kèm experiment/protocol/model/split/seed/denominators/source hashes, manifest cấu hình/input/split/cache/historical code identity và snapshot môi trường. Kiểm tra input/cache/split fingerprints và CSV/manifest agreement.
+- Evidence: [validation log](../outputs/logs/phuc05_validation.md), [pytest XML](../outputs/logs/phuc05_pytest.xml), [real replay](../outputs/logs/phuc05_real_score_replay.json), [handoff/B2 audit](../outputs/logs/phuc05_handoff_audit.json), [hướng dẫn bàn giao](HANDOFF.md), [bảng đọc nhanh](../outputs/tables/phuc05_handoff_seed0_2026-10-20/results.md), [64-row CSV](../outputs/tables/phuc05_handoff_seed0_2026-10-20/metrics.csv), [bundle manifest](../outputs/tables/phuc05_handoff_seed0_2026-10-20/manifest.json).
+- **AC1 Passed:** full regression và smoke hai lần, liên kết evidence 01–04. **AC2 Passed:** metadata/version/seed/cache identity + tái chạy synthetic/score thật/full B2 CLI có bằng chứng. **AC3 Passed:** bảng đủ, strict prediction contract, CLI examples, declared model provenance tách khỏi adapter-verified metadata và giới hạn được công khai.
+- CLI help, code/artifact integrity, Git-ignore, local documentation links và `git diff --check`: **Passed**. Multi-seed/graph/significance/new PLM encoding: **Not Run** vì ngoài phạm vi được duyệt; không có kiểm tra bắt buộc còn thiếu.
 
 #### E. Blockers & Open Decisions
 
-OD-01/OD-09 đã gỡ; OD-07 còn mở. Phụ thuộc PHUC-01–04 đã Verified (cập nhật dependency ngày 2026-10-20; PHUC-05 vẫn Not Started). Cần duyệt phạm vi tái chạy và tiêu chí so sánh phù hợp tài nguyên.
+OD-01/OD-09 đã gỡ; OD-07 được chốt theo phê duyệt ngày 2026-10-20. Lịch sử: từng cần duyệt phạm vi tái chạy; nay đã thực hiện đủ synthetic hai lần, sample thật và full B2 CLI. Không còn blocker kỹ thuật cho PHUC-01–05 seed 0. Giữ giới hạn History/click-time proxy, Random test-set shift, declared provenance của model ngoài và phạm vi Future; không đánh dấu multi-seed/graph là hoàn thành.
 
 #### F. Next Actions
 
-Phụ thuộc PHUC-01–04 cho nghiệm thu cuối. Chuẩn bị kế hoạch metadata/handoff từ đầu; chỉ triển khai hoặc chuyển ticket khi được xác nhận. Module dự kiến: smoke test, CLI chấm prediction, configs và hướng dẫn chạy.
+Người dùng review HANDOFF, bảng tổng hợp và validation log. Chỉ commit/push hoặc mở rộng sang Future khi có chỉ dẫn riêng; không tự chuyển sang công việc khác.
 
 #### G. Last Updated
 
-2026-10-19 — khởi tạo tracker, chưa triển khai.
+2026-10-20 — PHUC-05 Verified, hoàn tất AC1–AC3 và bàn giao seed 0 được duyệt.
 
 ## Update Rules
 
@@ -305,3 +311,5 @@ Các đường dẫn bằng chứng chỉ được thêm khi artifact thực s�
 | 2026-10-19 | PHUC-03 real-cache/B4 acceptance | Người dùng cài dependencies/tạo cache; Codex xác minh 65.238 embeddings, pinned revision/version/checksum và encoder parity 8 tin. Chỉ B4 chạy validation/test thành công; 123 tests + 42 subtests Passed; audit cosine/label isolation/cutoff trên 100 impressions/4.016 candidates Passed. | Implemented → Verified, AC1–AC3 Passed theo protocol được duyệt. OD-01/OD-09 resolved; giữ hạn chế History/seed 0 và lịch sử lỗi. Không rerun B3, không sửa source/config, không chuyển PHUC-04 hoặc commit/push. |
 | 2026-10-20 | PHUC-04 approval/implementation | Người dùng duyệt protocol E1 cumulative seed 0 và ba yêu cầu timestamp proxy, random order independence, mandatory PHUC-02 comparison. Đã viết runner/config, modules riêng và test. | Not Started → In Progress; OD-03/OD-06 được chốt cho E1. Chờ kết quả test và run thật; không sửa PHUC-01–03. |
 | 2026-10-20 | PHUC-04 verification | 156 tests + 42 subtests Passed; 6 real runs completed. 8/8 clean metrics và denominators khớp chính xác PHUC-02. Audit 252.868 evaluation occurrences / 9.645.975 scores, 46 hashes, full-data random reversed order và source/config preservation Passed. Log/metrics/deltas/manifest đã lưu. | In Progress → Verified; AC1–AC3 đạt. Static test AUC tăng 12.7150%, nDCG@10 tăng 20.1683% tương đối trên cùng test set; Random có test-set shift. Không có failed/skipped checks; multi-seed/graph/statistics ngoài phạm vi. Không commit/push hoặc triển khai PHUC-05. |
+| 2026-10-20 | PHUC-05 approval/implementation | Người dùng trả lời “ok” cho kế hoạch adapter/CLI, tổng hợp 64 metric, smoke hai lần, sample thật 20+20/model, full B2 re-evaluation và bàn giao seed 0. | Not Started → In Progress; OD-07 chốt phạm vi và bảo lưu lịch cũ. Đã viết code/tests; chờ kiểm chứng. Không thêm dependency hoặc commit/push. |
+| 2026-10-20 | PHUC-05 final verification/handoff | 199 tests + 42 subtests Passed; synthetic smoke hai lần exact; 8.615 real scores của 5 baseline configurations exact; 8 overall + 176 group rows B2 CLI exact PHUC-02; bundle 64 metric/source/environment đầy đủ. CLI/docs/hash/isolation checks Passed. | In Progress → Verified; AC1–AC3 đạt, PHUC-01–05 hoàn tất trong phạm vi seed 0. Không có blocker kỹ thuật còn mở; Future/multi-seed/graph không triển khai. Không sửa protocol/dependencies, không commit/push. |

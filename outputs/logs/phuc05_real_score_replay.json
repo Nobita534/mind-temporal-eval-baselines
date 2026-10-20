@@ -1,0 +1,993 @@
+{
+  "status": "Passed",
+  "data_kind": "MIND-small",
+  "seed": 0,
+  "finished_utc": "2026-10-20T10:13:32.233886+00:00",
+  "selection": "first 20 impressions in original file order per validation/test; same rows for all models",
+  "purpose": "score reproduction only; no new benchmark metric or tuning",
+  "cache_manifest_sha256": "308dbe26502b523a94d27d327aa48f51a1cc300e50283e3819614c081410f1d9",
+  "embedding_policy": {
+    "seed": 0,
+    "model_id": "sentence-transformers/all-MiniLM-L6-v2",
+    "model_revision": "1110a243fdf4706b3f48f1d95db1a4f5529b4d41",
+    "text": "title_dot_abstract_strip_outer",
+    "max_seq_length": 256,
+    "normalize_news": true,
+    "dimension": 384,
+    "device": "cpu",
+    "batch_size": 64
+  },
+  "cache_libraries": {
+    "numpy": "2.5.4",
+    "torch": "2.14.1",
+    "sentence-transformers": "5.7.0",
+    "transformers": "5.20.1"
+  },
+  "numpy": "2.5.4",
+  "source_inputs": [
+    {
+      "path": "data/raw/train/behaviors.tsv",
+      "bytes": 92019716,
+      "sha256": "a424547c8fa17c9ea4879c2110221c2b2f2709f4f7615ede0b0d8e4765158658"
+    },
+    {
+      "path": "data/raw/dev/behaviors.tsv",
+      "bytes": 42838544,
+      "sha256": "b6c460e33b1a8693252ded6e626da7d3ccf78920eea2ec11889020bb7d8443ef"
+    },
+    {
+      "path": "data/raw/train/news.tsv",
+      "bytes": 41202121,
+      "sha256": "cd49d7da275e9c405f627d75a0de9d4ec6ad43ff8a8db5d23a447591676e09d6"
+    },
+    {
+      "path": "data/raw/dev/news.tsv",
+      "bytes": 33519092,
+      "sha256": "e5d144667558c449d16084fe6bfa01940c2f5d5785ea9f9110292bc3b94eb822"
+    }
+  ],
+  "runs": [
+    {
+      "split": "validation",
+      "model": "B1_random",
+      "impressions": 20,
+      "candidate_scores": 1059,
+      "max_absolute_error": 0.0,
+      "exact_equal": true,
+      "repeat_exact_equal": true,
+      "tolerance": 0,
+      "sample_keys": [
+        [
+          "MINDsmall_train",
+          "3"
+        ],
+        [
+          "MINDsmall_train",
+          "11"
+        ],
+        [
+          "MINDsmall_train",
+          "14"
+        ],
+        [
+          "MINDsmall_train",
+          "21"
+        ],
+        [
+          "MINDsmall_train",
+          "40"
+        ],
+        [
+          "MINDsmall_train",
+          "50"
+        ],
+        [
+          "MINDsmall_train",
+          "59"
+        ],
+        [
+          "MINDsmall_train",
+          "60"
+        ],
+        [
+          "MINDsmall_train",
+          "62"
+        ],
+        [
+          "MINDsmall_train",
+          "70"
+        ],
+        [
+          "MINDsmall_train",
+          "72"
+        ],
+        [
+          "MINDsmall_train",
+          "81"
+        ],
+        [
+          "MINDsmall_train",
+          "86"
+        ],
+        [
+          "MINDsmall_train",
+          "88"
+        ],
+        [
+          "MINDsmall_train",
+          "116"
+        ],
+        [
+          "MINDsmall_train",
+          "125"
+        ],
+        [
+          "MINDsmall_train",
+          "134"
+        ],
+        [
+          "MINDsmall_train",
+          "138"
+        ],
+        [
+          "MINDsmall_train",
+          "140"
+        ],
+        [
+          "MINDsmall_train",
+          "145"
+        ]
+      ],
+      "score_sha256": "6f8a742da1ff79c7955055cc3aa67bbb173e2efa7e2a20f4d9d10a7719fe1bb5",
+      "reference_predictions": "outputs\\predictions\\phuc02_mindsmall_seed0_2026-10-19\\validation\\B1_random\\per_impression.csv"
+    },
+    {
+      "split": "validation",
+      "model": "B2_cumulative",
+      "impressions": 20,
+      "candidate_scores": 1059,
+      "max_absolute_error": 0.0,
+      "exact_equal": true,
+      "repeat_exact_equal": true,
+      "tolerance": 0,
+      "sample_keys": [
+        [
+          "MINDsmall_train",
+          "3"
+        ],
+        [
+          "MINDsmall_train",
+          "11"
+        ],
+        [
+          "MINDsmall_train",
+          "14"
+        ],
+        [
+          "MINDsmall_train",
+          "21"
+        ],
+        [
+          "MINDsmall_train",
+          "40"
+        ],
+        [
+          "MINDsmall_train",
+          "50"
+        ],
+        [
+          "MINDsmall_train",
+          "59"
+        ],
+        [
+          "MINDsmall_train",
+          "60"
+        ],
+        [
+          "MINDsmall_train",
+          "62"
+        ],
+        [
+          "MINDsmall_train",
+          "70"
+        ],
+        [
+          "MINDsmall_train",
+          "72"
+        ],
+        [
+          "MINDsmall_train",
+          "81"
+        ],
+        [
+          "MINDsmall_train",
+          "86"
+        ],
+        [
+          "MINDsmall_train",
+          "88"
+        ],
+        [
+          "MINDsmall_train",
+          "116"
+        ],
+        [
+          "MINDsmall_train",
+          "125"
+        ],
+        [
+          "MINDsmall_train",
+          "134"
+        ],
+        [
+          "MINDsmall_train",
+          "138"
+        ],
+        [
+          "MINDsmall_train",
+          "140"
+        ],
+        [
+          "MINDsmall_train",
+          "145"
+        ]
+      ],
+      "score_sha256": "b9b8bd123d4605a41be9889ff46e1cc2f01c3a83557e1f1448aadfe34d7c00bc",
+      "reference_predictions": "outputs\\predictions\\phuc02_mindsmall_seed0_2026-10-19\\validation\\B2_cumulative\\per_impression.csv"
+    },
+    {
+      "split": "validation",
+      "model": "B2_24h",
+      "impressions": 20,
+      "candidate_scores": 1059,
+      "max_absolute_error": 0.0,
+      "exact_equal": true,
+      "repeat_exact_equal": true,
+      "tolerance": 0,
+      "sample_keys": [
+        [
+          "MINDsmall_train",
+          "3"
+        ],
+        [
+          "MINDsmall_train",
+          "11"
+        ],
+        [
+          "MINDsmall_train",
+          "14"
+        ],
+        [
+          "MINDsmall_train",
+          "21"
+        ],
+        [
+          "MINDsmall_train",
+          "40"
+        ],
+        [
+          "MINDsmall_train",
+          "50"
+        ],
+        [
+          "MINDsmall_train",
+          "59"
+        ],
+        [
+          "MINDsmall_train",
+          "60"
+        ],
+        [
+          "MINDsmall_train",
+          "62"
+        ],
+        [
+          "MINDsmall_train",
+          "70"
+        ],
+        [
+          "MINDsmall_train",
+          "72"
+        ],
+        [
+          "MINDsmall_train",
+          "81"
+        ],
+        [
+          "MINDsmall_train",
+          "86"
+        ],
+        [
+          "MINDsmall_train",
+          "88"
+        ],
+        [
+          "MINDsmall_train",
+          "116"
+        ],
+        [
+          "MINDsmall_train",
+          "125"
+        ],
+        [
+          "MINDsmall_train",
+          "134"
+        ],
+        [
+          "MINDsmall_train",
+          "138"
+        ],
+        [
+          "MINDsmall_train",
+          "140"
+        ],
+        [
+          "MINDsmall_train",
+          "145"
+        ]
+      ],
+      "score_sha256": "f0e259a3f4b3057edddd4be1751061ccf4dbc40c001882577632b5a0c390a385",
+      "reference_predictions": "outputs\\predictions\\phuc02_mindsmall_seed0_2026-10-19\\validation\\B2_24h\\per_impression.csv"
+    },
+    {
+      "split": "validation",
+      "model": "B3_category",
+      "impressions": 20,
+      "candidate_scores": 1059,
+      "max_absolute_error": 0.0,
+      "exact_equal": true,
+      "repeat_exact_equal": true,
+      "tolerance": 0,
+      "sample_keys": [
+        [
+          "MINDsmall_train",
+          "3"
+        ],
+        [
+          "MINDsmall_train",
+          "11"
+        ],
+        [
+          "MINDsmall_train",
+          "14"
+        ],
+        [
+          "MINDsmall_train",
+          "21"
+        ],
+        [
+          "MINDsmall_train",
+          "40"
+        ],
+        [
+          "MINDsmall_train",
+          "50"
+        ],
+        [
+          "MINDsmall_train",
+          "59"
+        ],
+        [
+          "MINDsmall_train",
+          "60"
+        ],
+        [
+          "MINDsmall_train",
+          "62"
+        ],
+        [
+          "MINDsmall_train",
+          "70"
+        ],
+        [
+          "MINDsmall_train",
+          "72"
+        ],
+        [
+          "MINDsmall_train",
+          "81"
+        ],
+        [
+          "MINDsmall_train",
+          "86"
+        ],
+        [
+          "MINDsmall_train",
+          "88"
+        ],
+        [
+          "MINDsmall_train",
+          "116"
+        ],
+        [
+          "MINDsmall_train",
+          "125"
+        ],
+        [
+          "MINDsmall_train",
+          "134"
+        ],
+        [
+          "MINDsmall_train",
+          "138"
+        ],
+        [
+          "MINDsmall_train",
+          "140"
+        ],
+        [
+          "MINDsmall_train",
+          "145"
+        ]
+      ],
+      "score_sha256": "ddf71f3a948d7a2ee174200dead4c12c8d7383575a2a5b1355578c4bdf87fb14",
+      "reference_predictions": "outputs\\predictions\\phuc03_b3_mindsmall_seed0_2026-10-19\\validation\\B3_category\\per_impression.csv"
+    },
+    {
+      "split": "validation",
+      "model": "B4_semantic_plm",
+      "impressions": 20,
+      "candidate_scores": 1059,
+      "max_absolute_error": 0.0,
+      "exact_equal": true,
+      "repeat_exact_equal": true,
+      "tolerance": 1e-06,
+      "sample_keys": [
+        [
+          "MINDsmall_train",
+          "3"
+        ],
+        [
+          "MINDsmall_train",
+          "11"
+        ],
+        [
+          "MINDsmall_train",
+          "14"
+        ],
+        [
+          "MINDsmall_train",
+          "21"
+        ],
+        [
+          "MINDsmall_train",
+          "40"
+        ],
+        [
+          "MINDsmall_train",
+          "50"
+        ],
+        [
+          "MINDsmall_train",
+          "59"
+        ],
+        [
+          "MINDsmall_train",
+          "60"
+        ],
+        [
+          "MINDsmall_train",
+          "62"
+        ],
+        [
+          "MINDsmall_train",
+          "70"
+        ],
+        [
+          "MINDsmall_train",
+          "72"
+        ],
+        [
+          "MINDsmall_train",
+          "81"
+        ],
+        [
+          "MINDsmall_train",
+          "86"
+        ],
+        [
+          "MINDsmall_train",
+          "88"
+        ],
+        [
+          "MINDsmall_train",
+          "116"
+        ],
+        [
+          "MINDsmall_train",
+          "125"
+        ],
+        [
+          "MINDsmall_train",
+          "134"
+        ],
+        [
+          "MINDsmall_train",
+          "138"
+        ],
+        [
+          "MINDsmall_train",
+          "140"
+        ],
+        [
+          "MINDsmall_train",
+          "145"
+        ]
+      ],
+      "score_sha256": "26c68f54b34aef7b995229c3ee5e01aa4409bf840d45773560641d53cd01abae",
+      "reference_predictions": "outputs\\predictions\\phuc03_b4_mindsmall_seed0_2026-10-19\\validation\\B4_semantic_plm\\per_impression.csv"
+    },
+    {
+      "split": "test",
+      "model": "B1_random",
+      "impressions": 20,
+      "candidate_scores": 664,
+      "max_absolute_error": 0.0,
+      "exact_equal": true,
+      "repeat_exact_equal": true,
+      "tolerance": 0,
+      "sample_keys": [
+        [
+          "MINDsmall_dev",
+          "1"
+        ],
+        [
+          "MINDsmall_dev",
+          "2"
+        ],
+        [
+          "MINDsmall_dev",
+          "3"
+        ],
+        [
+          "MINDsmall_dev",
+          "4"
+        ],
+        [
+          "MINDsmall_dev",
+          "5"
+        ],
+        [
+          "MINDsmall_dev",
+          "6"
+        ],
+        [
+          "MINDsmall_dev",
+          "7"
+        ],
+        [
+          "MINDsmall_dev",
+          "8"
+        ],
+        [
+          "MINDsmall_dev",
+          "9"
+        ],
+        [
+          "MINDsmall_dev",
+          "10"
+        ],
+        [
+          "MINDsmall_dev",
+          "11"
+        ],
+        [
+          "MINDsmall_dev",
+          "12"
+        ],
+        [
+          "MINDsmall_dev",
+          "13"
+        ],
+        [
+          "MINDsmall_dev",
+          "14"
+        ],
+        [
+          "MINDsmall_dev",
+          "15"
+        ],
+        [
+          "MINDsmall_dev",
+          "16"
+        ],
+        [
+          "MINDsmall_dev",
+          "17"
+        ],
+        [
+          "MINDsmall_dev",
+          "18"
+        ],
+        [
+          "MINDsmall_dev",
+          "19"
+        ],
+        [
+          "MINDsmall_dev",
+          "20"
+        ]
+      ],
+      "score_sha256": "c47e9d58c6d3fedadeff311dc638eafb48cea852f99d3fd64a8643d4a636e08a",
+      "reference_predictions": "outputs\\predictions\\phuc02_mindsmall_seed0_2026-10-19\\test\\B1_random\\per_impression.csv"
+    },
+    {
+      "split": "test",
+      "model": "B2_cumulative",
+      "impressions": 20,
+      "candidate_scores": 664,
+      "max_absolute_error": 0.0,
+      "exact_equal": true,
+      "repeat_exact_equal": true,
+      "tolerance": 0,
+      "sample_keys": [
+        [
+          "MINDsmall_dev",
+          "1"
+        ],
+        [
+          "MINDsmall_dev",
+          "2"
+        ],
+        [
+          "MINDsmall_dev",
+          "3"
+        ],
+        [
+          "MINDsmall_dev",
+          "4"
+        ],
+        [
+          "MINDsmall_dev",
+          "5"
+        ],
+        [
+          "MINDsmall_dev",
+          "6"
+        ],
+        [
+          "MINDsmall_dev",
+          "7"
+        ],
+        [
+          "MINDsmall_dev",
+          "8"
+        ],
+        [
+          "MINDsmall_dev",
+          "9"
+        ],
+        [
+          "MINDsmall_dev",
+          "10"
+        ],
+        [
+          "MINDsmall_dev",
+          "11"
+        ],
+        [
+          "MINDsmall_dev",
+          "12"
+        ],
+        [
+          "MINDsmall_dev",
+          "13"
+        ],
+        [
+          "MINDsmall_dev",
+          "14"
+        ],
+        [
+          "MINDsmall_dev",
+          "15"
+        ],
+        [
+          "MINDsmall_dev",
+          "16"
+        ],
+        [
+          "MINDsmall_dev",
+          "17"
+        ],
+        [
+          "MINDsmall_dev",
+          "18"
+        ],
+        [
+          "MINDsmall_dev",
+          "19"
+        ],
+        [
+          "MINDsmall_dev",
+          "20"
+        ]
+      ],
+      "score_sha256": "d01f427c7d12b8bbb567e1ce4d4046bec85bf75f61c2ae6c76e5526c6e75d384",
+      "reference_predictions": "outputs\\predictions\\phuc02_mindsmall_seed0_2026-10-19\\test\\B2_cumulative\\per_impression.csv"
+    },
+    {
+      "split": "test",
+      "model": "B2_24h",
+      "impressions": 20,
+      "candidate_scores": 664,
+      "max_absolute_error": 0.0,
+      "exact_equal": true,
+      "repeat_exact_equal": true,
+      "tolerance": 0,
+      "sample_keys": [
+        [
+          "MINDsmall_dev",
+          "1"
+        ],
+        [
+          "MINDsmall_dev",
+          "2"
+        ],
+        [
+          "MINDsmall_dev",
+          "3"
+        ],
+        [
+          "MINDsmall_dev",
+          "4"
+        ],
+        [
+          "MINDsmall_dev",
+          "5"
+        ],
+        [
+          "MINDsmall_dev",
+          "6"
+        ],
+        [
+          "MINDsmall_dev",
+          "7"
+        ],
+        [
+          "MINDsmall_dev",
+          "8"
+        ],
+        [
+          "MINDsmall_dev",
+          "9"
+        ],
+        [
+          "MINDsmall_dev",
+          "10"
+        ],
+        [
+          "MINDsmall_dev",
+          "11"
+        ],
+        [
+          "MINDsmall_dev",
+          "12"
+        ],
+        [
+          "MINDsmall_dev",
+          "13"
+        ],
+        [
+          "MINDsmall_dev",
+          "14"
+        ],
+        [
+          "MINDsmall_dev",
+          "15"
+        ],
+        [
+          "MINDsmall_dev",
+          "16"
+        ],
+        [
+          "MINDsmall_dev",
+          "17"
+        ],
+        [
+          "MINDsmall_dev",
+          "18"
+        ],
+        [
+          "MINDsmall_dev",
+          "19"
+        ],
+        [
+          "MINDsmall_dev",
+          "20"
+        ]
+      ],
+      "score_sha256": "5f361ae0f0fe081c728828cb5cf0f44179ef4f5a6c4a7757e478a6edf91a5c28",
+      "reference_predictions": "outputs\\predictions\\phuc02_mindsmall_seed0_2026-10-19\\test\\B2_24h\\per_impression.csv"
+    },
+    {
+      "split": "test",
+      "model": "B3_category",
+      "impressions": 20,
+      "candidate_scores": 664,
+      "max_absolute_error": 0.0,
+      "exact_equal": true,
+      "repeat_exact_equal": true,
+      "tolerance": 0,
+      "sample_keys": [
+        [
+          "MINDsmall_dev",
+          "1"
+        ],
+        [
+          "MINDsmall_dev",
+          "2"
+        ],
+        [
+          "MINDsmall_dev",
+          "3"
+        ],
+        [
+          "MINDsmall_dev",
+          "4"
+        ],
+        [
+          "MINDsmall_dev",
+          "5"
+        ],
+        [
+          "MINDsmall_dev",
+          "6"
+        ],
+        [
+          "MINDsmall_dev",
+          "7"
+        ],
+        [
+          "MINDsmall_dev",
+          "8"
+        ],
+        [
+          "MINDsmall_dev",
+          "9"
+        ],
+        [
+          "MINDsmall_dev",
+          "10"
+        ],
+        [
+          "MINDsmall_dev",
+          "11"
+        ],
+        [
+          "MINDsmall_dev",
+          "12"
+        ],
+        [
+          "MINDsmall_dev",
+          "13"
+        ],
+        [
+          "MINDsmall_dev",
+          "14"
+        ],
+        [
+          "MINDsmall_dev",
+          "15"
+        ],
+        [
+          "MINDsmall_dev",
+          "16"
+        ],
+        [
+          "MINDsmall_dev",
+          "17"
+        ],
+        [
+          "MINDsmall_dev",
+          "18"
+        ],
+        [
+          "MINDsmall_dev",
+          "19"
+        ],
+        [
+          "MINDsmall_dev",
+          "20"
+        ]
+      ],
+      "score_sha256": "e78865548c47fd4332befef88552be5a3515ddb63842753a2a08e37cafeab15a",
+      "reference_predictions": "outputs\\predictions\\phuc03_b3_mindsmall_seed0_2026-10-19\\test\\B3_category\\per_impression.csv"
+    },
+    {
+      "split": "test",
+      "model": "B4_semantic_plm",
+      "impressions": 20,
+      "candidate_scores": 664,
+      "max_absolute_error": 0.0,
+      "exact_equal": true,
+      "repeat_exact_equal": true,
+      "tolerance": 1e-06,
+      "sample_keys": [
+        [
+          "MINDsmall_dev",
+          "1"
+        ],
+        [
+          "MINDsmall_dev",
+          "2"
+        ],
+        [
+          "MINDsmall_dev",
+          "3"
+        ],
+        [
+          "MINDsmall_dev",
+          "4"
+        ],
+        [
+          "MINDsmall_dev",
+          "5"
+        ],
+        [
+          "MINDsmall_dev",
+          "6"
+        ],
+        [
+          "MINDsmall_dev",
+          "7"
+        ],
+        [
+          "MINDsmall_dev",
+          "8"
+        ],
+        [
+          "MINDsmall_dev",
+          "9"
+        ],
+        [
+          "MINDsmall_dev",
+          "10"
+        ],
+        [
+          "MINDsmall_dev",
+          "11"
+        ],
+        [
+          "MINDsmall_dev",
+          "12"
+        ],
+        [
+          "MINDsmall_dev",
+          "13"
+        ],
+        [
+          "MINDsmall_dev",
+          "14"
+        ],
+        [
+          "MINDsmall_dev",
+          "15"
+        ],
+        [
+          "MINDsmall_dev",
+          "16"
+        ],
+        [
+          "MINDsmall_dev",
+          "17"
+        ],
+        [
+          "MINDsmall_dev",
+          "18"
+        ],
+        [
+          "MINDsmall_dev",
+          "19"
+        ],
+        [
+          "MINDsmall_dev",
+          "20"
+        ]
+      ],
+      "score_sha256": "129325116867cd68b907ef62f0da0fa00a2a8569de288b53288ce20676eae56c",
+      "reference_predictions": "outputs\\predictions\\phuc03_b4_mindsmall_seed0_2026-10-19\\test\\B4_semantic_plm\\per_impression.csv"
+    }
+  ],
+  "total_impressions": 200,
+  "total_candidate_scores": 8615
+}

@@ -1,0 +1,25 @@
+{
+  "model": "B2_cumulative",
+  "seed": 0,
+  "model_config": {
+    "window_hours": null,
+    "cutoff": "day_start",
+    "History_in_counts": false
+  },
+  "training_data": "PHUC-02: validation source 09-13/11; test source 09-14/11; positive labels at impression timestamp",
+  "code_revision": "ff202377dab3a431477f6965847382eae3c8c862",
+  "source_manifest": "outputs/tables/phuc02_mindsmall_seed0_2026-10-19/manifest.json",
+  "source_code_sha256": {
+    "scripts/run_baselines.py": "5c4262baba59a493ac6612974c55eda38d6e50471357d640b4d4dbbd58c5841b",
+    "src/baselines/base.py": "bfaebc1baffb2b5c3bcbbcc7752aaae6bc71e7e12f5b44c600b9fa959f225471",
+    "src/baselines/b1_random.py": "3bed95ce1e3e9adcf190461fd606b13adb2a066891b728d316f8ea52aad21cd6",
+    "src/baselines/b2_popularity.py": "9cb25ff496385dff0c82b12a970604853d7291e57765baaa37cd7da57cff3ba1",
+    "src/data_loader/mind_reader.py": "c6e203a893be61fa13850ac2b5585e85c7b234f7a9ce3cebce132a8ae86be05d",
+    "src/data_loader/temporal_split.py": "ce75aac3064fd337288768be07fe5e96c41f9510e4e649d852f99eb2159e3f5f",
+    "src/data_loader/schema.py": "0a1fe4c76d48b82764d67db4bfaec04088d3a06cbc3718777b853d9b5d068b1d",
+    "src/evaluation/evaluator.py": "ca612d80910d79f0e066c68b5637dfa244d289ebff29cdf09b0a668304793adf",
+    "src/evaluation/metrics.py": "59aa55a4729e53e4a23a89211fce065fa46c69bf508d8b2189fc02bfb7f6d840",
+    "src/evaluation/group_analyzer.py": "8e6eb2a4550324e19f3d7107407d652ed6f67cd96c8848a024d38b0efb69a1ad",
+    "requirements.txt": "f4d25f78df4d3b13d1b17298c60bfddb6405c931823c39c4180d98b66ff0010f"
+  }
+}

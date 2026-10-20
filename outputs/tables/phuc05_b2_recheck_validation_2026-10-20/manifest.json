@@ -1,0 +1,192 @@
+{
+  "status": "completed",
+  "ticket": "PHUC-05",
+  "data_kind": "MIND-small",
+  "model": "B2_cumulative",
+  "seed": 0,
+  "split": "validation",
+  "protocol": "gts_clean",
+  "started_utc": "2026-10-20T10:12:39.694863+00:00",
+  "python": "3.13.5",
+  "inputs": [
+    {
+      "path": "data/raw/train/behaviors.tsv",
+      "bytes": 92019716,
+      "sha256": "a424547c8fa17c9ea4879c2110221c2b2f2709f4f7615ede0b0d8e4765158658"
+    },
+    {
+      "path": "data/raw/dev/behaviors.tsv",
+      "bytes": 42838544,
+      "sha256": "b6c460e33b1a8693252ded6e626da7d3ccf78920eea2ec11889020bb7d8443ef"
+    },
+    {
+      "path": "data/raw/train/news.tsv",
+      "bytes": 41202121,
+      "sha256": "cd49d7da275e9c405f627d75a0de9d4ec6ad43ff8a8db5d23a447591676e09d6"
+    },
+    {
+      "path": "data/raw/dev/news.tsv",
+      "bytes": 33519092,
+      "sha256": "e5d144667558c449d16084fe6bfa01940c2f5d5785ea9f9110292bc3b94eb822"
+    },
+    {
+      "path": "outputs/predictions/phuc02_mindsmall_seed0_2026-10-19/validation/B2_cumulative/per_impression.csv",
+      "bytes": 60896594,
+      "sha256": "3d60b504e8677658189998a25cf0db1e631c1e52b79f1caa3f30f3b63135381b"
+    },
+    {
+      "path": "outputs/logs/phuc05_b2_provenance.json",
+      "bytes": 1604,
+      "sha256": "bb118783ebae288210c9415f2f492a84894829ade3d3c7be4a175289076628b5"
+    },
+    {
+      "path": "configs/eval_config.yaml",
+      "bytes": 466,
+      "sha256": "b750ee25512b971d3d1c1c795d186473c8f4646ec0bf54169347f7bae79a700e"
+    }
+  ],
+  "evaluation_config": {
+    "metrics": [
+      "auc",
+      "mrr",
+      "ndcg@5",
+      "ndcg@10"
+    ],
+    "aggregation": "impression_macro",
+    "ranking_ties": "candidate_order",
+    "undefined_metric": "null_and_count",
+    "invalid_prediction": "error",
+    "history_quantiles": [
+      0.25,
+      0.75
+    ],
+    "history_quantile_method": "linear",
+    "history_fit_split": "train",
+    "cold_warm_grouping": "impression_composition",
+    "category_grouping": "impression_presence_overlapping",
+    "metadata_click_boundary": "strict_before_cutoff"
+  },
+  "model_declaration": {
+    "model": "B2_cumulative",
+    "seed": 0,
+    "model_config": {
+      "window_hours": null,
+      "cutoff": "day_start",
+      "History_in_counts": false
+    },
+    "training_data": "PHUC-02: validation source 09-13/11; test source 09-14/11; positive labels at impression timestamp",
+    "code_revision": "ff202377dab3a431477f6965847382eae3c8c862",
+    "source_manifest": "outputs/tables/phuc02_mindsmall_seed0_2026-10-19/manifest.json",
+    "source_code_sha256": {
+      "scripts/run_baselines.py": "5c4262baba59a493ac6612974c55eda38d6e50471357d640b4d4dbbd58c5841b",
+      "src/baselines/base.py": "bfaebc1baffb2b5c3bcbbcc7752aaae6bc71e7e12f5b44c600b9fa959f225471",
+      "src/baselines/b1_random.py": "3bed95ce1e3e9adcf190461fd606b13adb2a066891b728d316f8ea52aad21cd6",
+      "src/baselines/b2_popularity.py": "9cb25ff496385dff0c82b12a970604853d7291e57765baaa37cd7da57cff3ba1",
+      "src/data_loader/mind_reader.py": "c6e203a893be61fa13850ac2b5585e85c7b234f7a9ce3cebce132a8ae86be05d",
+      "src/data_loader/temporal_split.py": "ce75aac3064fd337288768be07fe5e96c41f9510e4e649d852f99eb2159e3f5f",
+      "src/data_loader/schema.py": "0a1fe4c76d48b82764d67db4bfaec04088d3a06cbc3718777b853d9b5d068b1d",
+      "src/evaluation/evaluator.py": "ca612d80910d79f0e066c68b5637dfa244d289ebff29cdf09b0a668304793adf",
+      "src/evaluation/metrics.py": "59aa55a4729e53e4a23a89211fce065fa46c69bf508d8b2189fc02bfb7f6d840",
+      "src/evaluation/group_analyzer.py": "8e6eb2a4550324e19f3d7107407d652ed6f67cd96c8848a024d38b0efb69a1ad",
+      "requirements.txt": "f4d25f78df4d3b13d1b17298c60bfddb6405c931823c39c4180d98b66ff0010f"
+    }
+  },
+  "verification_boundary": "raw alignment and evaluator metadata verified; model training leakage not verified",
+  "code_sha256": {
+    "scripts/evaluate_predictions.py": "a4b2e887103b6072a3265561e9a1d864115033b471637b0ed995e0aa6f8a66c4",
+    "src/data_loader/prediction_reader.py": "14b9ee232c3a3f7ca6040cfb7f20a6e404bbc7cb67bf3e6fb0c8b8f08e60ac53",
+    "scripts/run_baselines.py": "cdf6f832029633222c859acd10934820ec02370c78e5f63fb07288011dfdbcf9",
+    "src/data_loader/mind_reader.py": "765ae010bfe081e4dbc1f9ac23e7f6be92e0a4ac72821cb1b26ea9e2b28f1654",
+    "src/data_loader/schema.py": "0a1fe4c76d48b82764d67db4bfaec04088d3a06cbc3718777b853d9b5d068b1d",
+    "src/data_loader/temporal_split.py": "ce75aac3064fd337288768be07fe5e96c41f9510e4e649d852f99eb2159e3f5f",
+    "src/baselines/b2_popularity.py": "9cb25ff496385dff0c82b12a970604853d7291e57765baaa37cd7da57cff3ba1",
+    "src/evaluation/evaluator.py": "ca612d80910d79f0e066c68b5637dfa244d289ebff29cdf09b0a668304793adf",
+    "src/evaluation/metrics.py": "59aa55a4729e53e4a23a89211fce065fa46c69bf508d8b2189fc02bfb7f6d840",
+    "src/evaluation/group_analyzer.py": "8e6eb2a4550324e19f3d7107407d652ed6f67cd96c8848a024d38b0efb69a1ad"
+  },
+  "split_stats": {
+    "impressions": 30270,
+    "clicks": 46825,
+    "candidates": 1222429,
+    "min_time": "2019-11-14T00:00:00",
+    "max_time": "2019-11-14T23:59:13"
+  },
+  "source_stats": {
+    "impressions": 126695,
+    "clicks": 189519,
+    "candidates": 4621015,
+    "min_time": "2019-11-09T00:00:19",
+    "max_time": "2019-11-13T23:59:21"
+  },
+  "source_end": "2019-11-14T00:00:00",
+  "timestamp_policy": "positive label uses impression time, not actual click time; History excluded from counts",
+  "finished_utc": "2026-10-20T10:13:26.134354+00:00",
+  "overall": [
+    {
+      "metric": "auc",
+      "mean": 0.5162956361101749,
+      "n_impressions": 30270,
+      "n_valid": 30270,
+      "n_undefined": 0
+    },
+    {
+      "metric": "mrr",
+      "mean": 0.21501765844013485,
+      "n_impressions": 30270,
+      "n_valid": 30270,
+      "n_undefined": 0
+    },
+    {
+      "metric": "ndcg@5",
+      "mean": 0.21680688078767524,
+      "n_impressions": 30270,
+      "n_valid": 30270,
+      "n_undefined": 0
+    },
+    {
+      "metric": "ndcg@10",
+      "mean": 0.2778410639545543,
+      "n_impressions": 30270,
+      "n_valid": 30270,
+      "n_undefined": 0
+    }
+  ],
+  "libraries": {
+    "numpy": "2.5.4",
+    "scikit-learn": "1.9.1",
+    "PyYAML": "6.0.3",
+    "pytest": "9.1.1"
+  },
+  "history_thresholds": {
+    "q25": 8.0,
+    "q75": 42.0,
+    "n_train": 126695,
+    "n_positive_history": 124229,
+    "training_sources": [
+      "MINDsmall_train"
+    ],
+    "max_train_time": "2019-11-13T23:59:21"
+  },
+  "artifacts": [
+    {
+      "path": "D:/Phuc/Dai hoc/Nam bon/MXH/PROJECT/mind-temporal-eval-baselines/outputs/tables/phuc05_b2_recheck_validation_2026-10-20/overall.csv",
+      "bytes": 208,
+      "sha256": "0f69b9427b2491d838ac261f813eb0e52e81b75ebb14e844adad61a233dfbc94"
+    },
+    {
+      "path": "D:/Phuc/Dai hoc/Nam bon/MXH/PROJECT/mind-temporal-eval-baselines/outputs/tables/phuc05_b2_recheck_validation_2026-10-20/groups.csv",
+      "bytes": 6120,
+      "sha256": "fbfaa6f4bc9df2343ad08be1d866938dba5183d68c9f30a368eacce733a1e524"
+    },
+    {
+      "path": "D:/Phuc/Dai hoc/Nam bon/MXH/PROJECT/mind-temporal-eval-baselines/outputs/predictions/phuc05_b2_recheck_validation_2026-10-20/per_impression.csv",
+      "bytes": 61259834,
+      "sha256": "d16cfaa64f5ade5bad5b9866e6b2364b83dabdfb3bfce8f13d1f9386b334f4c9"
+    },
+    {
+      "path": "D:/Phuc/Dai hoc/Nam bon/MXH/PROJECT/mind-temporal-eval-baselines/outputs/predictions/phuc05_b2_recheck_validation_2026-10-20/metadata.json",
+      "bytes": 8147140,
+      "sha256": "df3e0d74501c20d29dbad784dcfb7a2bb42da67bf99adc8a8b8604cf338d8a53"
+    }
+  ]
+}

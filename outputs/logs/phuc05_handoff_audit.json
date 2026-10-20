@@ -1,0 +1,102 @@
+{
+  "status": "Passed",
+  "B2_rechecks": [
+    {
+      "split": "validation",
+      "status": "Passed",
+      "comparisons": {
+        "overall.csv": {
+          "rows": 4,
+          "exact_equal": true,
+          "original": {
+            "path": "outputs/tables/phuc02_mindsmall_seed0_2026-10-19/validation/B2_cumulative/overall.csv",
+            "sha256": "0f69b9427b2491d838ac261f813eb0e52e81b75ebb14e844adad61a233dfbc94",
+            "bytes": 208
+          },
+          "recheck": {
+            "path": "outputs/tables/phuc05_b2_recheck_validation_2026-10-20/overall.csv",
+            "sha256": "0f69b9427b2491d838ac261f813eb0e52e81b75ebb14e844adad61a233dfbc94",
+            "bytes": 208
+          }
+        },
+        "groups.csv": {
+          "rows": 88,
+          "exact_equal": true,
+          "original": {
+            "path": "outputs/tables/phuc02_mindsmall_seed0_2026-10-19/validation/B2_cumulative/groups.csv",
+            "sha256": "fbfaa6f4bc9df2343ad08be1d866938dba5183d68c9f30a368eacce733a1e524",
+            "bytes": 6120
+          },
+          "recheck": {
+            "path": "outputs/tables/phuc05_b2_recheck_validation_2026-10-20/groups.csv",
+            "sha256": "fbfaa6f4bc9df2343ad08be1d866938dba5183d68c9f30a368eacce733a1e524",
+            "bytes": 6120
+          }
+        }
+      },
+      "history_thresholds": {
+        "q25": 8.0,
+        "q75": 42.0,
+        "n_train": 126695,
+        "n_positive_history": 124229,
+        "training_sources": [
+          "MINDsmall_train"
+        ],
+        "max_train_time": "2019-11-13T23:59:21"
+      },
+      "impressions": 30270,
+      "candidates": 1222429
+    },
+    {
+      "split": "test",
+      "status": "Passed",
+      "comparisons": {
+        "overall.csv": {
+          "rows": 4,
+          "exact_equal": true,
+          "original": {
+            "path": "outputs/tables/phuc02_mindsmall_seed0_2026-10-19/test/B2_cumulative/overall.csv",
+            "sha256": "cd90d3fa291bedbe2c04f85356aa9ab28544964825727b43db88c5681898abdb",
+            "bytes": 207
+          },
+          "recheck": {
+            "path": "outputs/tables/phuc05_b2_recheck_test_2026-10-20/overall.csv",
+            "sha256": "cd90d3fa291bedbe2c04f85356aa9ab28544964825727b43db88c5681898abdb",
+            "bytes": 207
+          }
+        },
+        "groups.csv": {
+          "rows": 88,
+          "exact_equal": true,
+          "original": {
+            "path": "outputs/tables/phuc02_mindsmall_seed0_2026-10-19/test/B2_cumulative/groups.csv",
+            "sha256": "82472d8a38dc417ca6b1bbe344656a13567a5bcae05b5a96c900f5d4fe759d64",
+            "bytes": 6122
+          },
+          "recheck": {
+            "path": "outputs/tables/phuc05_b2_recheck_test_2026-10-20/groups.csv",
+            "sha256": "82472d8a38dc417ca6b1bbe344656a13567a5bcae05b5a96c900f5d4fe759d64",
+            "bytes": 6122
+          }
+        }
+      },
+      "history_thresholds": {
+        "q25": 8.0,
+        "q75": 42.0,
+        "n_train": 126695,
+        "n_positive_history": 124229,
+        "training_sources": [
+          "MINDsmall_train"
+        ],
+        "max_train_time": "2019-11-13T23:59:21"
+      },
+      "impressions": 73152,
+      "candidates": 2740998
+    }
+  ],
+  "handoff_metric_rows": 64,
+  "baseline_rows": 40,
+  "E1_rows": 24,
+  "source_protocol_code_unchanged": true,
+  "handoff_artifact_hashes": "Passed"
+}

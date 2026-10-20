@@ -2,6 +2,11 @@
 
 Repository này cung cấp **Bộ khung Đánh giá Chuẩn hóa theo Thời gian (Temporal Evaluation Suite)** và các **Mô hình Mốc sàn (Baselines B1–B4)** trên tập dữ liệu **MIND-small**, thuộc khuôn khổ đồ án môn Mạng Xã Hội (IS353.R11) — **Đề tài B.5: Building an Intelligent Personalized Content Feed (Nhóm 04)**.
 
+**Bàn giao seed 0:** PHUC-01–05 đã Verified. Bắt đầu tại
+[hướng dẫn bàn giao](docs/HANDOFF.md), [bảng kết quả B1–B4/E1](outputs/tables/phuc05_handoff_seed0_2026-10-20/results.md)
+và [validation log cuối](outputs/logs/phuc05_validation.md). Nhiều seed, mô hình
+graph và kiểm định thống kê vẫn thuộc Future.
+
 ## 🎯 Mục tiêu chính
 1. **Standardized Evaluator (`PHUC-01`):** Cung cấp công cụ chấm điểm thống nhất (AUC, MRR, nDCG@5, nDCG@10) tính theo từng lượt hiển thị (impression-level) và bóc tách kết quả theo nhóm người dùng (history length), độ mới của tin (cold/warm news) và chủ đề (category).
 2. **Zero-Training Baselines (`PHUC-02`, `PHUC-03`):** Cài đặt 4 mô hình cơ sở tuân thủ nghiêm ngặt ràng buộc thời gian ($G_{<t}$):
@@ -344,12 +349,39 @@ Kết quả một seed là sơ bộ; không suy ra ý nghĩa thống kê, click 
 online hoặc ảnh hưởng trên mô hình graph. Xem [WORK_STATUS](docs/WORK_STATUS.md)
 và [validation log PHUC-04](outputs/logs/phuc04_validation.md) cho nghiệm thu thực tế.
 
+## PHUC-05: kiểm thử, tái lập và bàn giao evaluator
+
+Đã triển khai CLI nhận score CSV từ B5/B6/THG-Rec và công cụ tổng hợp 64 dòng metric.
+Adapter đối chiếu đủ impression/candidate theo thứ tự raw, tự dựng labels và metadata
+nhóm sạch; không xác minh được quá trình huấn luyện của mô hình bên ngoài.
+Model/seed/config/training source/code revision được ghi riêng dưới dạng khai báo.
+
+```powershell
+.\.venv\Scripts\python.exe -m pytest tests/ -q -p no:cacheprovider
+.\.venv\Scripts\python.exe -m scripts.evaluate_predictions --help
+.\.venv\Scripts\python.exe -m scripts.build_handoff --output-dir outputs/tables/my_handoff_new
+```
+
+CSV tối thiểu gồm `source,impression_id,candidate_ids,scores`; hai cột cuối là JSON
+arrays. Mỗi file chứa đầy đủ một split validation hoặc test. Cần model-provenance
+JSON và hai thư mục output mới. Hợp đồng, examples, flags và lệnh đầy đủ nằm trong
+[HANDOFF.md](docs/HANDOFF.md).
+
+Nghiệm thu: **199 tests + 42 subtests Passed**; smoke hai lần có split/score/metric
+giống hệt; 8.615 score mẫu thật của B1–B4 khớp chính xác artifact cũ; CLI chấm lại B2
+trên đủ validation/test khớp 8 overall metric và 176 group rows PHUC-02.
+Snapshot môi trường, model revision và source identities nằm trong
+[handoff manifest](outputs/tables/phuc05_handoff_seed0_2026-10-20/manifest.json).
+`environment.freeze.txt` là bản ghi môi trường, không phải lockfile đa nền tảng.
+Không tạo benchmark mới từ smoke, không cộng/gộp metric giữa các protocol.
+
 ## 📂 Cấu trúc thư mục
 
 ```text
 mind-temporal-eval-baselines/
 ├── docs/                           # Tài liệu thiết kế và kế hoạch thực hiện
 │   ├── SNA-Proposal-v2.md          # Bản đề xuất nghiên cứu chi tiết (Mini Proposal v2)
+│   ├── HANDOFF.md                 # Hợp đồng prediction, CLI, tái lập và giới hạn bàn giao
 │   └── project-plan.md             # Kế hoạch triển khai các tickets (PHUC-01 -> PHUC-05)
 │
 ├── configs/                        # Cấu hình tham số và random seed phục vụ tái lập kết quả
@@ -365,12 +397,15 @@ mind-temporal-eval-baselines/
 ├── src/                            # Mã nguồn cốt lõi (Core Library dùng chung cho cả nhóm)
 │   ├── data_loader/                # Đọc dữ liệu, chuẩn hóa schema và chia tập dữ liệu
 │   │   ├── schema.py               # Định nghĩa schema dự đoán chuẩn theo từng impression
-│   │   └── temporal_split.py       # Logic chia dữ liệu GTS, Static và Random Split 80/10/10
+│   │   ├── temporal_split.py       # GTS sạch và cutoff ngày
+│   │   ├── random_split.py         # E1 Random 80/10/10 theo hash của seed + key
+│   │   └── prediction_reader.py    # Score CSV đối chiếu raw, giữ đủ candidate
 │   ├── evaluation/                 # Bộ công cụ đánh giá dùng chung cho mọi mô hình
 │   │   ├── metrics.py              # Hàm tính AUC, MRR, nDCG@5, nDCG@10 (xử lý tie scores)
 │   │   ├── evaluator.py            # Pipeline tính metric theo impression và lấy trung bình
 │   │   ├── group_analyzer.py       # Phân tích kết quả theo nhóm user, cold/warm news, category
-│   │   └── stats_test.py           # Kiểm định thống kê paired t-test và hiệu chỉnh Holm
+│   │   ├── handoff.py              # Tổng hợp artifact/provenance B1–B4/E1
+│   │   └── stats_test.py           # Placeholder Future: paired t-test và Holm
 │   └── baselines/                  # Cài đặt các mô hình cơ sở B1 -> B4
 │       ├── base.py                 # Giao diện chung (BaseRecommender) cho các baseline
 │       ├── b1_random.py            # Baseline B1: Random scoring
@@ -382,6 +417,7 @@ mind-temporal-eval-baselines/
 │   ├── cache_plm_embeddings.py     # Trích xuất và lưu cache vector PLM cho toàn bộ bài báo
 │   ├── run_baselines.py            # Chạy end-to-end các mô hình B1-B4 và xuất bảng điểm
 │   ├── run_e1_leakage.py           # Chạy thí nghiệm E1 đo mức độ thổi phồng metric do leakage
+│   ├── build_handoff.py            # Tổng hợp 64 metric và snapshot môi trường
 │   └── evaluate_predictions.py     # Công cụ độc lập để chấm điểm cho B5, B6 và THG-Rec
 │
 ├── tests/                          # Bộ kiểm thử tự động (chạy với pytest)
