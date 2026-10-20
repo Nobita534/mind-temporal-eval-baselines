@@ -1,0 +1,9 @@
+split,model,seed,metric,mean,n_impressions,n_valid,n_undefined
+validation,B3_category,0,auc,0.586645207880361,30270,30270,0
+validation,B3_category,0,mrr,0.262718713844252,30270,30270,0
+validation,B3_category,0,ndcg@5,0.2784275017315943,30270,30270,0
+validation,B3_category,0,ndcg@10,0.33717686042829337,30270,30270,0
+test,B3_category,0,auc,0.6046322994805222,73152,73152,0
+test,B3_category,0,mrr,0.29368867078449784,73152,73152,0
+test,B3_category,0,ndcg@5,0.31955177868709744,73152,73152,0
+test,B3_category,0,ndcg@10,0.37869487135356694,73152,73152,0

@@ -1,4 +1,4 @@
-"""Minimal streaming MIND TSV reader. History contributes length, NEVER click events."""
+"""Streaming MIND reader. History IDs have no invented click timestamps."""
 
 import csv
 import sys
@@ -20,13 +20,15 @@ class Behavior:
     candidate_ids: tuple[str, ...]
     labels: tuple[int, ...]
     split: str = "unassigned"
+    history_ids: tuple[str, ...] = ()
 
     @property
     def key(self) -> tuple[str, str]:
         return self.source, self.impression_id
 
     def context(self) -> ScoringContext:
-        return ScoringContext(self.source, self.impression_id, self.timestamp, self.candidate_ids)
+        return ScoringContext(self.source, self.impression_id, self.timestamp,
+                              self.candidate_ids, self.history_ids)
 
 
 def read_behaviors(path: str | Path, *, source: str) -> Iterator[Behavior]:
@@ -54,7 +56,8 @@ def read_behaviors(path: str | Path, *, source: str) -> Iterator[Behavior]:
                     raise ValueError("duplicate candidate ID")
                 yield Behavior(source, impression_id, sys.intern(user_id),
                                datetime.strptime(time_text, "%m/%d/%Y %I:%M:%S %p"),
-                               len(history.split()), tuple(candidate_ids), tuple(labels))
+                               len(history.split()), tuple(candidate_ids), tuple(labels),
+                               history_ids=tuple(sys.intern(n) for n in history.split()))
             except ValueError as exc:
                 raise ValueError(f"{path}:{line_number}: {exc}") from exc
 
@@ -73,3 +76,35 @@ def read_categories(paths: Iterable[str | Path]) -> dict[str, str | None]:
                     raise ValueError(f"{path}:{line_number}: conflicting category for {news_id}")
                 categories[news_id] = category
     return categories
+
+
+@dataclass(frozen=True, slots=True)
+class NewsMetadata:
+    category: str | None
+    subcategory: str | None
+    title: str
+    abstract: str
+
+    @property
+    def text(self) -> str:
+        """Strip outer whitespace only; preserve internal punctuation and spacing."""
+        return ". ".join(part.strip() for part in (self.title, self.abstract) if part.strip())
+
+
+def read_news(paths: Iterable[str | Path]) -> dict[str, NewsMetadata]:
+    """Union content metadata; conflicting records are errors, never last-wins."""
+    news: dict[str, NewsMetadata] = {}
+    for path in paths:
+        with Path(path).open(encoding="utf-8-sig", newline="") as handle:
+            for line_number, fields in enumerate(csv.reader(handle, delimiter="\t", quoting=csv.QUOTE_NONE), 1):
+                if len(fields) != 8 or not fields[0]:
+                    raise ValueError(f"{path}:{line_number}: expected eight news columns and ID")
+                item = NewsMetadata(fields[1].strip() or None, fields[2].strip() or None,
+                                    fields[3], fields[4])
+                news_id = sys.intern(fields[0])
+                if news_id in news and news[news_id] != item:
+                    raise ValueError(f"{path}:{line_number}: conflicting content for {news_id}")
+                news[news_id] = item
+    if not news:
+        raise ValueError("news metadata is empty")
+    return news

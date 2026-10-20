@@ -16,7 +16,8 @@ Repository này cung cấp **Bộ khung Đánh giá Chuẩn hóa theo Thời gia
 ## PHUC-01: sử dụng evaluator
 
 Đã triển khai API schema, metric, evaluator và phân nhóm; B1/B2 và runner GTS được
-mô tả ở mục PHUC-02 bên dưới. B3/B4, E1 và statistical tests vẫn là placeholder. Các kết quả
+mô tả ở mục PHUC-02 bên dưới. B3/B4 đã được nghiệm thu trên MIND-small theo protocol
+PHUC-03 được duyệt (seed 0, PLM đóng băng). E1 và statistical tests vẫn là placeholder. Các kết quả
 trong `outputs/tables/phuc01_synthetic_2026-10-19/` chỉ là **synthetic fixtures**,
 không phải kết quả thực nghiệm MIND-small.
 
@@ -114,6 +115,66 @@ Khi PyYAML sẵn sàng, dùng `load_eval_config("configs/eval_config.yaml")` r�
 Config thiếu/thừa key hoặc thay chính sách đã duyệt sẽ bị từ chối; thay protocol cần
 phê duyệt và cập nhật implementation/tests. Ghi dataset/split identity, seed và code
 version trong `run_metadata` khi tích hợp mô hình; evaluator không tự tạo thông tin này.
+
+## PHUC-03: Category và Semantic PLM
+
+**Trạng thái:** PHUC-03 Verified: B3/B4 đã chạy thật, cache và encoder PLM đã đối chiếu;
+kiểm thử numerical/mock, regression và audit temporal Passed. Xem `docs/WORK_STATUS.md` và
+`outputs/logs/phuc03_validation.md` để biết bằng chứng và blocker hiện tại.
+
+### Protocol được duyệt
+
+- History lấy từ **chính impression**, giữ toàn bộ ID và các lần lặp, không gom từ
+  impression khác và không cập nhật bằng nhãn evaluation. Giả định có trước impression;
+  không có timestamp để chứng minh có trước đầu ngày. Khác với snapshot ngày của B2.
+- B3 = tần suất subcategory của candidate trên các mục history có subcategory hợp lệ.
+  Chỉ fallback category nếu candidate thiếu subcategory hoặc history không có
+  subcategory hợp lệ; subcategory hợp lệ nhưng chưa gặp có điểm 0. Ví dụ history
+  `[football, football, travel]` cho candidate football điểm `2/3`.
+- B4 = cosine(candidate, mean(history embeddings)). MiniLM đóng băng, news vectors
+  chuẩn hóa L2; tích lũy trung bình float64, zero-norm user (`norm <= 1e-12`) trả 0.
+  Bỏ mục history không có metadata/text; không thay bằng tin khác.
+- Text = title và abstract đã strip hai đầu, nối bằng `. `; trường rỗng bị bỏ.
+  Model `sentence-transformers/all-MiniLM-L6-v2`, revision
+  `1110a243fdf4706b3f48f1d95db1a4f5529b4d41`, 384 chiều, tối đa 256 word pieces,
+  CPU, batch 64, seed 0. Không fine-tune, không dùng ID embedding của entity làm news embedding.
+- User rỗng/không có profile hoặc candidate thiếu nội dung: điểm 0. Điểm 0 này có
+  thể cao hơn cosine âm; không pha popularity. Ties giữ thứ tự candidate gốc.
+- Cache nội dung news train/dev độc lập từng tin, không fit corpus hay dùng nhãn.
+  Thiếu cache cho tin có text, sai revision/content/checksum/mapping: báo lỗi.
+  News ID trùng nhưng metadata mâu thuẫn cũng báo lỗi.
+- GTS/metric/cold-warm giữ nguyên PHUC-01/02; cutoff metadata click không được hiểu
+  là cutoff của History B3/B4. Ngưỡng history vẫn fit train 09–13/11, dùng độ dài
+  history gốc trước khi bỏ mục thiếu nội dung. Test 15/11 không dùng để tuning.
+
+### Chạy cục bộ
+
+Cài dependencies trong terminal có quyền mạng. Không cần PLM để chạy B3 hoặc test
+numerical/cache mock. Không tải model trong pytest.
+
+```powershell
+.\.venv\Scripts\python.exe -m pip install -r requirements.txt
+.\.venv\Scripts\python.exe -m pytest tests/test_content_baselines.py tests/test_temporal_leakage.py tests/test_metrics_edge_cases.py -q -p no:cacheprovider
+```
+
+Tạo cache thật một lần, rồi chạy **chỉ B4** nếu B3 đã chạy:
+
+```powershell
+.\.venv\Scripts\python.exe -m scripts.cache_plm_embeddings --output-dir data/cache/phuc03_minilm_2026-10-19
+.\.venv\Scripts\python.exe -m scripts.run_baselines --content-config configs/content_baselines_config.yaml --models B4_semantic_plm --embedding-cache data/cache/phuc03_minilm_2026-10-19 --output-dir outputs/tables/phuc03_b4_mindsmall_seed0_2026-10-19 --predictions-dir outputs/predictions/phuc03_b4_mindsmall_seed0_2026-10-19
+```
+
+`--local-files-only` ở cache CLI dùng khi model đã tải đủ đúng revision trong HF cache.
+Không truyền `--models` sẽ chạy cả B3/B4; B4 luôn cần `--embedding-cache`.
+Muốn chỉ B3: `--models B3_category`, không cần cache. Các output directory phải mới,
+không lồng nhau; không ghi đè run cũ và không rerun test để chọn cấu hình tốt hơn.
+
+Artifact: `metrics.csv`, `manifest.json`, `<split>/<model>/{overall,groups}.csv`;
+chi tiết ở prediction directory. `content_diagnostics` trong manifest đếm history
+items/candidate items/impressions thiếu dữ liệu và fallback (các bộ đếm có thể chồng
+lấp). Cache gồm `embeddings.npy`, `news_ids.json`, `manifest.json` với revision,
+preprocessing, checksum input/code/vector, phiên bản thư viện. Cache/predictions lớn
+được Git-ignore. Bằng chứng encoder mock/synthetic **không phải** kết quả PLM thật.
 
 ## PHUC-02: Random và Temporal Popularity
 

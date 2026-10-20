@@ -7,9 +7,9 @@
 | Repository | `mind-temporal-eval-baselines` |
 | Dataset | MIND-small |
 | Scope | PHUC-01 đến PHUC-05 |
-| Project Stage | PHUC-01–02 Verified |
+| Project Stage | PHUC-01–03 Verified |
 | Last Updated | 2026-10-19 |
-| Current Focus | PHUC-02 đã nghiệm thu trên MIND-small; chờ người dùng review/xác nhận trước PHUC-03 |
+| Current Focus | PHUC-03 đã nghiệm thu B3/B4 trên MIND-small; chờ người dùng review/xác nhận |
 
 Nguồn phạm vi: [Project Plan](project-plan.md). Ràng buộc nghiên cứu: [Proposal](SNA-Proposal-v2.md), mục 3.2, 4.2–4.3, 5 và Appendix A.2/E1. Quy trình làm việc: [AGENTS.md](../AGENTS.md).
 
@@ -21,7 +21,7 @@ Placeholder không phải bằng chứng triển khai. Acceptance criteria dư�
 |---|---|---|---|
 | PHUC-01 | Evaluator & Metrics | Verified | 2026-10-19 |
 | PHUC-02 | Random & Popularity | Verified | 2026-10-19 |
-| PHUC-03 | Category & Semantic PLM | Not Started | 2026-10-19 |
+| PHUC-03 | Category & Semantic PLM | Verified | 2026-10-19 |
 | PHUC-04 | E1 Temporal Leakage | Not Started | 2026-10-19 |
 | PHUC-05 | Testing & Reproducibility | Not Started | 2026-10-19 |
 
@@ -43,14 +43,15 @@ Các mục dưới giữ nguyên vấn đề ban đầu; quyết định và b�
 
 | ID | Vấn đề / quyết định cần xác nhận | Liên quan |
 |---|---|---|
-| OD-01 | Ban đầu raw/cache chỉ có `.gitkeep`. **Resolved cho dữ liệu PHUC-02, 2026-10-19:** người dùng cung cấp train/dev; đã đọc đủ TSV và chạy B1/B2 trên MIND-small. PLM/cache cần cho PHUC-03 vẫn chưa xác nhận. | 01–05 |
+| OD-01 | Ban đầu raw/cache chỉ có `.gitkeep`. **Resolved, 2026-10-19:** người dùng cung cấp train/dev và sau đó tạo cache MiniLM thật; Codex đã xác minh checksum/model/version và chạy B1–B4 trên MIND-small. Chi tiết cache trong validation log PHUC-03. | 01–05 |
 | OD-02 | Chốt schema, định nghĩa metric theo scorer MIND, MRR nhiều positive, tie, nhãn suy biến và chính sách thiếu dữ liệu. | 01, 05 |
 | OD-03 | **Resolved cho PHUC-02, 2026-10-19:** cutoff đầu ngày; nguồn click impression train; không đếm History; cửa sổ `[d-24h,d)`. Kiểm thử biên, nguồn và audit thật Passed. Không suy rộng quyết định này thành protocol E1 hoặc Ghist; History vẫn không có timestamp từng click. | 02–04 |
 | OD-04 | Chốt ngưỡng history từ train và cách đánh giá cold/warm/category trong impression chứa nhiều nhóm; không đồng nhất cold news với thời gian xuất bản. | 01, 05 |
-| OD-05 | Chốt kết hợp category/subcategory, fallback thiếu dữ liệu; PLM revision, trường text, giới hạn history và mapping cache. | 03 |
+| OD-05 | **Resolved cho PHUC-03, 2026-10-19:** người dùng duyệt subcategory frequency/category fallback; History của chính impression, toàn bộ ID; frozen MiniLM title + abstract, revision cố định, 256 word pieces, mean/cosine, fallback 0; xem config và validation log. Không suy ra History có trước đầu ngày. | 03 |
 | OD-06 | Chốt biến thể B2 và nguồn click cho Random Split; tách split khỏi chính sách static popularity. Ghi hạn chế so sánh khi test set thay đổi và xử lý chênh lệch tương đối có mẫu số 0. | 04 |
 | OD-07 | Xác nhận deadline/ngân sách: Plan ghi 19/10, 6 giờ; Proposal có lịch Phúc đến 27/10. Chốt phạm vi nhiều seed; Plan đặt tổng hợp nhiều seed/kiểm định trong Future. | 05, toàn phạm vi |
 | OD-08 | **Resolved cho nghiệm thu PHUC-01, 2026-10-19.** Ban đầu pip trong phiên Codex bị chặn socket (WinError 10013), cache không có wheels. Người dùng đã cài requirements qua VS Code và cung cấp output pytest: 44 passed, 42 subtests passed, không Failed/Skipped. Không suy ra quyền mạng của sandbox Codex đã thay đổi. | 01 |
+| OD-09 | **Resolved cho PHUC-03, 2026-10-19:** ban đầu pip/network probe WinError 10013, cache CLI thiếu torch. Người dùng cài dependencies/tạo cache qua VS Code; Codex kiểm tra cache, encoder thật offline và chạy B4 thành công. Không suy ra quyền mạng sandbox đã đổi; không phải lỗi Python 3.13. | 03 |
 
 Khi giải quyết: giữ ID, ghi ngày, quyết định, xác nhận của người dùng và ảnh hưởng; không xóa lịch sử quan trọng.
 
@@ -138,7 +139,7 @@ Không còn blocker nghiệm thu PHUC-02. OD-01 đã gỡ cho dữ liệu train/
 
 #### F. Next Actions
 
-Chờ người dùng review/xác nhận trước PHUC-03. B2/GTS sẵn sàng cho E1 sau khi duyệt protocol của PHUC-04; không tự chạy thêm test-set configurations hoặc commit/push.
+Người dùng đã duyệt PHUC-03; B2/GTS được tái sử dụng cho metadata cold/warm. B2/GTS sẵn sàng cho E1 sau khi duyệt protocol của PHUC-04; không tự chạy thêm test-set configurations hoặc commit/push.
 
 #### G. Last Updated
 
@@ -152,13 +153,13 @@ Cung cấp B3 dựa trên hồ sơ chủ đề và B4 semantic matching bằng P
 
 #### B. Task Checklist
 
-- [ ] Tạo hồ sơ category/subcategory từ history hợp lệ của user.
-- [ ] Chấm điểm candidate theo độ phù hợp category/subcategory.
-- [ ] Tạo hoặc nạp embedding PLM của tin.
-- [ ] Lấy trung bình embedding history làm vector user.
-- [ ] Tính cosine similarity giữa user và candidate.
-- [ ] Xử lý user mới, history rỗng và metadata thiếu.
-- [ ] Chạy B3–B4 qua evaluator.
+- [x] Tạo hồ sơ category/subcategory từ History của chính impression theo giả định đã duyệt.
+- [x] Chấm điểm candidate theo độ phù hợp category/subcategory.
+- [x] Tạo/nạp embedding PLM thật: 65.238 news × 384 chiều; kiểm tra model/revision, checksum, mapping và encoder parity.
+- [x] Lấy trung bình embedding history làm vector user; kiểm chứng synthetic và audit cosine trên dữ liệu thật.
+- [x] Tính cosine similarity giữa user và candidate.
+- [x] Xử lý user mới, history rỗng và metadata thiếu.
+- [x] Chạy B3–B4 qua evaluator trên MIND-small, đủ validation/test và diagnostics.
 
 #### C. Acceptance Criteria
 
@@ -168,21 +169,27 @@ Cung cấp B3 dựa trên hồ sơ chủ đề và B4 semantic matching bằng P
 
 #### D. Implementation Evidence
 
-- Files/modules đã triển khai: chưa có.
-- Tests: **Not Run** — chưa có implementation/test logic.
-- Outputs/logs/cache embedding: chưa có; chưa có bằng chứng đạt AC1–AC3.
+- Files: `src/baselines/{base,b3_category,b4_semantic_plm}.py`, `src/data_loader/mind_reader.py`, `scripts/{cache_plm_embeddings,run_baselines}.py`, `configs/content_baselines_config.yaml`, `tests/test_content_baselines.py`, `requirements.txt`, hướng dẫn README. Không sửa evaluator/B1/B2 scoring.
+- Tests: `.venv\Scripts\python.exe -m pytest tests/test_content_baselines.py tests/test_temporal_leakage.py tests/test_metrics_edge_cases.py -q -p no:cacheprovider` — **123 Passed, 42 subtests Passed, 0 Failed/Skipped** (41 mới + 82 regression). Cache encoder mock không phải PLM thật.
+- B3 thật seed 0: 30.270 validation + 73.152 test impressions; tất cả metric hợp lệ. [Metrics](../outputs/tables/phuc03_b3_mindsmall_seed0_2026-10-19/metrics.csv), [manifest](../outputs/tables/phuc03_b3_mindsmall_seed0_2026-10-19/manifest.json), [validation log](../outputs/logs/phuc03_validation.md). Prediction chi tiết ở `outputs/predictions/phuc03_b3_mindsmall_seed0_2026-10-19/` (Git-ignored).
+- Audit độc lập từ TSV: **Passed**, 100 impressions/4.016 candidate scores và thứ tự khớp; 14 code hashes khớp manifest. Lệnh audit đầu sai tên cột `news_ids`; sửa thành `candidate_ids`, không sửa artifact. `git diff --check` Passed.
+- Lịch sử: dependency install/cache CLI **Failed** vì môi trường; B4 ban đầu **Not Run**, ticket ở Implemented với AC2/AC3 Partial. Đã gỡ OD-09 bằng cache/dependencies người dùng cung cấp; không xóa lịch sử lỗi.
+- **Tiếp tục 2026-10-19:** cache `data/cache/phuc03_minilm_2026-10-19/` Passed toàn bộ checksum/content/mapping/code/version, 65.238 × 384 float32. MiniLM revision `1110a243fdf4706b3f48f1d95db1a4f5529b4d41`; torch 2.14.1, sentence-transformers 5.7.0, transformers 5.20.1. Encoder thật offline trên 8 tin khớp cache (max abs error 7,45e-8).
+- Chỉ B4 chạy mới, exit 0, validation 30.270 + test 73.152 impressions; tất cả metric hợp lệ. [B4 metrics](../outputs/tables/phuc03_b4_mindsmall_seed0_2026-10-19/metrics.csv), [B4 manifest](../outputs/tables/phuc03_b4_mindsmall_seed0_2026-10-19/manifest.json); predictions ở `outputs/predictions/phuc03_b4_mindsmall_seed0_2026-10-19/` (Git-ignored). B3 không chạy lại.
+- Regression trong môi trường mới: **123 Passed + 42 subtests Passed, 3.24s, 0 Failed/Skipped**. Audit B4 100 impressions/4.016 scores Passed (cosine độc lập sai số tối đa 5,28e-8); đảo nhãn và chấm context tương lai không đổi score hiện tại; count metadata đúng nguồn train và cutoff. 14 run code hashes/input/cache hash khớp. Chi tiết và cảnh báo API không chặn trong validation log.
+- **AC1–AC3 Passed:** công thức/fallback, cache PLM thật + provenance/isolation, đủ bảng B3/B4 + diagnostics. **Verified** theo protocol seed 0 đã duyệt; không khẳng định timestamp History đã được chứng minh.
 
 #### E. Blockers & Open Decisions
 
-Dữ liệu train/dev đã sẵn sàng qua PHUC-02. OD-01 còn phần PLM/cache; OD-05 về công thức/fallback và cấu hình embedding vẫn mở. Reader PHUC-02 chỉ giữ history length; PHUC-03 cần kế hoạch xử lý history IDs phù hợp, không suy diễn timestamp.
+Không còn blocker nghiệm thu PHUC-03; OD-01/OD-05/OD-09 đã giải quyết trong phạm vi này. History không có timestamp từng click: chỉ giả định trước impression, không khẳng định trước đầu ngày hay trước 09/11. Seed 0, chưa có multi-seed/significance; không thay protocol PHUC-02. Cảnh báo đổi tên API lấy chiều embedding không chặn, chưa cần sửa source.
 
 #### F. Next Actions
 
-Phụ thuộc PHUC-01, metadata/history chuẩn hóa và PLM/cache. Trình kế hoạch `b3_category.py`, `b4_semantic_plm.py`, `scripts/cache_plm_embeddings.py`; không tự thêm dependencies.
+Chờ người dùng review/xác nhận trước kế hoạch PHUC-04. Giữ cache và artifact làm bằng chứng; không chạy thêm test configurations để tuning, không tự commit/push.
 
 #### G. Last Updated
 
-2026-10-19 — khởi tạo tracker, chưa triển khai.
+2026-10-19 — PHUC-03 Verified sau kiểm tra cache/encoder thật, B4 end-to-end, regression và audit temporal.
 
 ### PHUC-04 — E1 Temporal Leakage
 
@@ -251,7 +258,7 @@ Kiểm chứng luồng chung, chuẩn hóa artifact và bàn giao evaluator có 
 
 #### E. Blockers & Open Decisions
 
-OD-01 (PLM/cache), OD-07; PHUC-01–02 đã Verified, PHUC-03–04 chưa triển khai. Cần duyệt phạm vi tái chạy và tiêu chí so sánh phù hợp tài nguyên.
+OD-01/OD-09 đã gỡ; OD-07 còn mở. PHUC-01–03 đã Verified, PHUC-04 chưa triển khai. Cần duyệt phạm vi tái chạy và tiêu chí so sánh phù hợp tài nguyên.
 
 #### F. Next Actions
 
@@ -285,3 +292,7 @@ Các đường dẫn bằng chứng chỉ được thêm khi artifact thực s�
 | 2026-10-19 | PHUC-01 user verification | Người dùng báo đã cài requirements qua VS Code và gửi output `.\.venv\Scripts\python.exe -m pytest tests/test_metrics_edge_cases.py -v`: `44 passed, 42 subtests passed in 26.09s`; Python 3.13.5, pytest 9.1.1, pluggy 1.7.0. Reference NumPy/scikit-learn và YAML đều Passed. Không phải lượt Codex tự chạy lại. | Implemented → Verified; AC1–AC3 đạt với evidence mới và artifact synthetic sẵn có. OD-08 resolved cho nghiệm thu; giữ nguyên lịch sử lỗi. PHUC-02–05 vẫn Not Started; kế hoạch PHUC-02 chờ duyệt, chưa code. |
 | 2026-10-19 | PHUC-02 approval/data | Người dùng cung cấp train/dev và đồng ý kế hoạch. GTS đối chiếu đúng Proposal; duyệt cutoff đầu ngày và chỉ đếm click có timestamp, loại History. | Not Started → In Progress; OD-01 gỡ cho dữ liệu B1/B2, OD-03 chốt riêng PHUC-02. |
 | 2026-10-19 | PHUC-02 implementation/verification | 82 tests + 42 subtests Passed; runner thật exit 0, 6 model/split runs completed, seed 0. Audit độc lập 80 impression/3.446 candidate khớp; code hashes và n_valid khớp manifest. | In Progress → Verified, AC1–AC3 đạt. Lưu metrics/manifest/group/prediction và validation log; warning pytest cache không chặn. Không triển khai PHUC-03–05, không commit/push. |
+| 2026-10-19 | PHUC-03 approval | Người dùng duyệt kế hoạch bằng "oke", gồm thêm/cài sentence-transformers/PyTorch và tải model. History của chính impression, toàn bộ history; B3 subcategory với category fallback; B4 frozen MiniLM trên title + abstract; seed 0. | Not Started → In Progress. History chỉ được giả định có trước impression, không khẳng định trước đầu ngày; không thay B2/evaluator. Chưa có bằng chứng nghiệm thu PHUC-03. |
+| 2026-10-19 | PHUC-03 environment | Hai pip attempts thất bại; PyPI probe WinError 10013; cache CLI thiếu torch. | OD-09 Open, không có cache PLM thật; không đổi quyền mạng, không giả lập kết quả B4 thật. |
+| 2026-10-19 | PHUC-03 verification | 123 tests + 42 subtests Passed; B3 MIND-small validation/test completed; audit 100 impressions/4.016 scores Passed sau sửa tên cột của lệnh audit; 14 code hashes khớp. Xem validation log và manifest. | In Progress → Implemented; AC1 Passed, AC2/AC3 Partial. Chờ dependencies/cache/B4 thật; chưa Verified, không chuyển PHUC-04, không commit/push. |
+| 2026-10-19 | PHUC-03 real-cache/B4 acceptance | Người dùng cài dependencies/tạo cache; Codex xác minh 65.238 embeddings, pinned revision/version/checksum và encoder parity 8 tin. Chỉ B4 chạy validation/test thành công; 123 tests + 42 subtests Passed; audit cosine/label isolation/cutoff trên 100 impressions/4.016 candidates Passed. | Implemented → Verified, AC1–AC3 Passed theo protocol được duyệt. OD-01/OD-09 resolved; giữ hạn chế History/seed 0 và lịch sử lỗi. Không rerun B3, không sửa source/config, không chuyển PHUC-04 hoặc commit/push. |

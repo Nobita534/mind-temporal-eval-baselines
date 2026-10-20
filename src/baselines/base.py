@@ -1,4 +1,4 @@
-"""Label-free scoring interface shared by PHUC-02 baselines."""
+"""Label-free scoring interface; History is local to the current impression."""
 
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
@@ -13,6 +13,7 @@ class ScoringContext:
     impression_id: str
     timestamp: datetime
     candidate_ids: tuple[str, ...]
+    history_ids: tuple[str, ...] = ()
 
     def __post_init__(self) -> None:
         require_text(self.source, "source")
@@ -24,6 +25,9 @@ class ScoringContext:
             raise ValueError("candidate IDs must be nonempty and unique")
         for news_id in self.candidate_ids:
             require_text(news_id, "news_id")
+        object.__setattr__(self, "history_ids", tuple(self.history_ids))
+        for news_id in self.history_ids:
+            require_text(news_id, "history news_id")
 
 
 class BaseRecommender(ABC):

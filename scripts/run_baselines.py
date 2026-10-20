@@ -1,4 +1,4 @@
-"""PHUC-02 CLI: official train -> GTS, official dev -> test, B1 and two B2s.
+"""GTS CLI: B1/two B2s by default; explicit content config selects B3/B4.
 
 Run from repository root: python -m scripts.run_baselines --help.
 Only timestamped training-impression clicks enter popularity; never History/dev labels.
@@ -19,7 +19,9 @@ import yaml
 from src.baselines.base import BaseRecommender
 from src.baselines.b1_random import RandomBaseline
 from src.baselines.b2_popularity import ClickIndex, PopularityBaseline
-from src.data_loader.mind_reader import Behavior, read_behaviors, read_categories
+from src.baselines.b3_category import CategoryBaseline
+from src.baselines.b4_semantic_plm import EmbeddingStore, SemanticBaseline, load_content_config
+from src.data_loader.mind_reader import Behavior, read_behaviors, read_categories, read_news
 from src.data_loader.schema import CandidatePrediction, ImpressionPrediction, require_count
 from src.data_loader.temporal_split import global_temporal_split, day_cutoff, VALIDATION_START, TEST_START
 from src.evaluation.evaluator import evaluate, load_eval_config
@@ -118,9 +120,23 @@ def run_baselines(
     config_path: str | Path = "configs/baselines_config.yaml",
     eval_config_path: str | Path = "configs/eval_config.yaml",
     seed: int | None = None, data_kind: str = "MIND-small",
+    content_config_path: str | Path | None = None,
+    embedding_cache: str | Path | None = None, models: list[str] | None = None,
 ) -> dict:
     config = load_config(config_path, seed)
     eval_config = load_eval_config(eval_config_path)
+    content_config = load_content_config(content_config_path) if content_config_path is not None else None
+    if content_config is None and (models is not None or embedding_cache is not None):
+        raise ValueError("--models/--embedding-cache require --content-config")
+    selected = config["models"] if content_config is None else (
+        content_config["models"] if models is None else models)
+    if content_config is not None:
+        if config["seed"] != content_config["seed"]:
+            raise ValueError("content seed differs from approved policy")
+        if not selected or len(set(selected)) != len(selected) or not set(selected) <= set(content_config["models"]):
+            raise ValueError("select a nonempty unique subset of approved content models")
+        if "B4_semantic_plm" in selected and embedding_cache is None:
+            raise ValueError("B4 requires a completed embedding cache")
     output_dir, predictions_dir = Path(output_dir).resolve(), Path(predictions_dir).resolve()
     if output_dir == predictions_dir or output_dir in predictions_dir.parents or predictions_dir in output_dir.parents:
         raise ValueError("summary and prediction directories must be separate, nonnested paths")
@@ -130,9 +146,15 @@ def run_baselines(
     if not news_paths:
         raise ValueError("at least one news.tsv is required")
     inputs = [fingerprint(path) for path in files]
+    news = read_news(news_paths) if content_config is not None else None
+    store, cache_manifest = None, None
+    if content_config is not None and "B4_semantic_plm" in selected:
+        store, cache_manifest = EmbeddingStore.load(embedding_cache, news, content_config, data_kind=data_kind)
+        cache_manifest = {**cache_manifest, "path": str(Path(embedding_cache).resolve()),
+                          "manifest_sha256": fingerprint(Path(embedding_cache) / "manifest.json")["sha256"]}
     partitions = global_temporal_split(read_behaviors(train_path, source="MINDsmall_train"),
                                        read_behaviors(dev_path, source="MINDsmall_dev"))
-    categories = read_categories(news_paths)
+    categories = read_categories(news_paths) if news is None else {n: item.category for n, item in news.items()}
     train_for_groups = threshold_inputs(partitions.train, categories)
     repo = Path(__file__).resolve().parents[1]
     code_files = ["scripts/run_baselines.py", "src/baselines/base.py", "src/baselines/b1_random.py",
@@ -140,6 +162,9 @@ def run_baselines(
                   "src/data_loader/temporal_split.py", "src/data_loader/schema.py",
                   "src/evaluation/evaluator.py", "src/evaluation/metrics.py",
                   "src/evaluation/group_analyzer.py", "requirements.txt"]
+    if content_config is not None:
+        code_files.extend(["src/baselines/b3_category.py", "src/baselines/b4_semantic_plm.py",
+                           "scripts/cache_plm_embeddings.py"])
     try:
         revision = subprocess.run(["git", "rev-parse", "HEAD"], cwd=repo, check=True,
                                   capture_output=True, text=True).stdout.strip()
@@ -149,11 +174,15 @@ def run_baselines(
         "status": "running", "data_kind": data_kind, "seed": config["seed"],
         "started_utc": datetime.now(timezone.utc).isoformat(), "python": platform.python_version(),
         "baseline_config": config, "evaluation_config": eval_config,
+        "selected_models": selected, "content_config": content_config, "embedding_cache": cache_manifest,
         "inputs": inputs, "git_base_revision": revision,
         "code_sha256": {name: fingerprint(repo / name)["sha256"] for name in code_files},
         "source_policy": "History excluded; cumulative observed impression clicks, not full Ghist",
         "cold_warm_policy": "cumulative observed clicks even for B2_24h",
         "history_threshold_source": "train 09-13 only; unchanged for validation and test",
+        "content_history_policy": ("current impression History only; all entries, duplicates retained; "
+                                   "assumed before impression, not proven before day-start; no label updates")
+                                  if content_config is not None else None,
         "random_algorithm": "sha256([seed,source,impression_id,news_id]); top 53 bits / 2**53",
         "splits": {name: partition_stats(rows) for name, rows in
                    (("train", partitions.train), ("validation", partitions.validation),
@@ -177,14 +206,21 @@ def run_baselines(
             ("test", partitions.test, partitions.final_train(), TEST_START),
         ):
             index = ClickIndex(source_rows, source_end=source_end)
-            models = [RandomBaseline(config["seed"]), PopularityBaseline(index),
-                      PopularityBaseline(index, window_hours=24)]
-            for model in models:
+            if content_config is None:
+                active_models = [RandomBaseline(config["seed"]), PopularityBaseline(index),
+                                 PopularityBaseline(index, window_hours=24)]
+            else:
+                active_models = [CategoryBaseline(news) if name == "B3_category" else SemanticBaseline(news, store)
+                                 for name in selected]
+            for model in active_models:
                 result = evaluate(prediction_rows(evaluation_rows, model, index, categories),
                                   train_impressions=train_for_groups, config=eval_config,
                                   run_metadata={"data_kind": data_kind, "model": model.name,
                                                 "seed": str(config["seed"]), "manifest": str(manifest_path),
-                                                "source_end": source_end.isoformat()})
+                                                "source_end": source_end.isoformat(),
+                                                "history_policy": manifest["content_history_policy"] or "not_used",
+                                                "embedding_cache_manifest_sha256":
+                                                    cache_manifest["manifest_sha256"] if cache_manifest else "not_used"})
                 table_path = output_dir / split / model.name
                 prediction_path = predictions_dir / split / model.name
                 table_path.mkdir(parents=True, exist_ok=False)
@@ -202,6 +238,7 @@ def run_baselines(
                            "click_source_events": index.event_count, "overall": result.overall,
                            "history_thresholds": thresholds, "libraries": result.metadata["libraries"],
                            "predictions": str(prediction_path / "per_impression.csv"),
+                           "content_diagnostics": dict(getattr(model, "diagnostics", {})),
                            "missing_category_candidates": sum(c is None for r in result.per_impression
                                                                for c in r["categories"])}
                 manifest["runs"].append(details)
@@ -234,11 +271,16 @@ def main() -> None:
     parser.add_argument("--predictions-dir", required=True)
     parser.add_argument("--seed", type=int)
     parser.add_argument("--data-kind", default="MIND-small")
+    parser.add_argument("--content-config", help="Use approved PHUC-03 config instead of B1/B2 selection")
+    parser.add_argument("--embedding-cache", help="Completed frozen PLM cache, required for B4")
+    parser.add_argument("--models", nargs="+", choices=["B3_category", "B4_semantic_plm"],
+                        help="Content-model subset; defaults to both when --content-config is supplied")
     args = parser.parse_args()
     run_baselines(train_path=args.train_behaviors, dev_path=args.dev_behaviors, news_paths=args.news,
                   output_dir=args.output_dir, predictions_dir=args.predictions_dir,
                   config_path=args.config, eval_config_path=args.eval_config, seed=args.seed,
-                  data_kind=args.data_kind)
+                  data_kind=args.data_kind, content_config_path=args.content_config,
+                  embedding_cache=args.embedding_cache, models=args.models)
 
 
 if __name__ == "__main__":
